@@ -89,3 +89,5 @@ Public domain.
 
 * Kalle Vedin `kalle.vedin@fripost.org`
 * Unknown Name (majestrate)
+* idk
+* qiwenmin
