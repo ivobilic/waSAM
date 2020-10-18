@@ -160,11 +160,7 @@ func NewI2PAddrFromBytes(addr []byte) (I2PAddr, error) {
 
 // Turns an I2P address to a byte array. The inverse of NewI2PAddrFromBytes().
 func (addr I2PAddr) ToBytes() ([]byte, error) {
-	buf := make([]byte, i2pB64enc.DecodedLen(len(addr)))
-	if _, err := i2pB64enc.Decode(buf, []byte(addr)); err != nil {
-		return buf, errors.New("Address is not base64-encoded")
-	}
-	return buf, nil
+	return i2pB64enc.DecodeString(string(addr))
 }
 
 func (addr I2PAddr) Bytes() []byte {
