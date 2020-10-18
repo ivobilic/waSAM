@@ -76,7 +76,7 @@ func (e *SAMEmit) ConnectBytes(dest string) []byte {
 
 func (e *SAMEmit) Accept() string {
 	return fmt.Sprintf(
-		"STREAM ACCEPT ID=%s",
+		"STREAM ACCEPT ID=%s %s %s",
 		e.I2PConfig.ID(),
 		e.I2PConfig.FromPort(),
 		e.I2PConfig.ToPort(),

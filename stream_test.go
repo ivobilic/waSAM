@@ -150,7 +150,7 @@ func Test_StreamingServerClient(t *testing.T) {
 }
 
 func ExampleStreamSession() {
-	// Creates a new StreamingSession, dials to zzz.i2p and gets a SAMConn
+	// Creates a new StreamingSession, dials to idk.i2p and gets a SAMConn
 	// which behaves just like a normal net.Conn.
 
 	const samBridge = "127.0.0.1:7656"
@@ -172,7 +172,7 @@ func ExampleStreamSession() {
 		fmt.Println(err.Error())
 		return
 	}
-	someone, err := sam.Lookup("zzz.i2p")
+	someone, err := sam.Lookup("idk.i2p")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -192,17 +192,17 @@ func ExampleStreamSession() {
 	buf := make([]byte, 4096)
 	n, err := conn.Read(buf)
 	if !strings.Contains(strings.ToLower(string(buf[:n])), "http") && !strings.Contains(strings.ToLower(string(buf[:n])), "html") {
-		fmt.Printf("Probably failed to StreamSession.DialI2P(zzz.i2p)? It replied %d bytes, but nothing that looked like http/html", n)
-		log.Printf("Probably failed to StreamSession.DialI2P(zzz.i2p)? It replied %d bytes, but nothing that looked like http/html", n)
+		fmt.Printf("Probably failed to StreamSession.DialI2P(idk.i2p)? It replied %d bytes, but nothing that looked like http/html", n)
+		log.Printf("Probably failed to StreamSession.DialI2P(idk.i2p)? It replied %d bytes, but nothing that looked like http/html", n)
 	} else {
-		fmt.Println("Read HTTP/HTML from zzz.i2p")
-		log.Println("Read HTTP/HTML from zzz.i2p")
+		fmt.Println("Read HTTP/HTML from idk.i2p")
+		log.Println("Read HTTP/HTML from idk.i2p")
 	}
 	return
 
 	// Output:
 	//Sending HTTP GET /
-	//Read HTTP/HTML from zzz.i2p
+	//Read HTTP/HTML from idk.i2p
 }
 
 func ExampleStreamListener() {

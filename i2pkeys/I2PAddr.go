@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"io"
+	"os"
 	"strings"
 )
 
@@ -31,6 +32,18 @@ func NewKeys(addr I2PAddr, both string) I2PKeys {
 	return I2PKeys{addr, both}
 }
 
+// fileExists checks if a file exists and is not a directory before we
+// try using it to prevent further errors.
+func fileExists(filename string) (bool, error) {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false, nil
+	} else if err != nil {
+		return false, err
+	}
+	return !info.IsDir(), nil
+}
+
 // load keys from non standard format
 func LoadKeysIncompat(r io.Reader) (k I2PKeys, err error) {
 	var buff bytes.Buffer
@@ -42,10 +55,38 @@ func LoadKeysIncompat(r io.Reader) (k I2PKeys, err error) {
 	return
 }
 
+// load keys from non-standard format by specifying a text file.
+// If the file does not exist, generate keys, otherwise, fail
+// closed.
+func LoadKeys(r string) (I2PKeys, error) {
+	exists, err := fileExists(r)
+	if err != nil {
+		return I2PKeys{}, err
+	}
+	if exists {
+		fi, err := os.Open(r)
+		if err != nil {
+			return I2PKeys{}, err
+		}
+		defer fi.Close()
+		return LoadKeysIncompat(fi)
+	}
+	return I2PKeys{}, err
+}
+
 // store keys in non standard format
 func StoreKeysIncompat(k I2PKeys, w io.Writer) (err error) {
 	_, err = io.WriteString(w, k.Address.Base64()+"\n"+k.Both)
 	return
+}
+
+func StoreKeys(k I2PKeys, r string) error {
+	fi, err := os.Open(r)
+	if err != nil {
+		return err
+	}
+	defer fi.Close()
+	return StoreKeysIncompat(k, fi)
 }
 
 // Returns the public keys of the I2PKeys.

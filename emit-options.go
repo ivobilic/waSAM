@@ -22,7 +22,7 @@ func SetType(s string) func(*SAMEmit) error {
 			c.Style = s
 			return nil
 		}
-		return fmt.Errorf("Invalid session STYLE=%s, must be STREAM, DATAGRAM, or RAW")
+		return fmt.Errorf("Invalid session STYLE=%s, must be STREAM, DATAGRAM, or RAW", s)
 	}
 }
 

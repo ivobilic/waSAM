@@ -108,6 +108,10 @@ func (s *DatagramSession) ReadFrom(b []byte) (n int, addr net.Addr, err error) {
 	}
 }
 
+func (s *DatagramSession) Accept() (net.Conn, error) {
+	return s, nil
+}
+
 func (s *DatagramSession) Read(b []byte) (n int, err error) {
 	rint, _, rerr := s.ReadFrom(b)
 	return rint, rerr
@@ -144,6 +148,10 @@ func (s *DatagramSession) LocalI2PAddr() i2pkeys.I2PAddr {
 
 // Implements net.PacketConn
 func (s *DatagramSession) LocalAddr() net.Addr {
+	return s.LocalI2PAddr()
+}
+
+func (s *DatagramSession) Addr() net.Addr {
 	return s.LocalI2PAddr()
 }
 
