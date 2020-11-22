@@ -93,5 +93,5 @@ func I2PStreamSession(name, samaddr, keyspath string) (*sam3.StreamSession, erro
 		keys = &tkeys
 	}
 	stream, err := sam.NewStreamSession(name, *keys, sam3.Options_Medium)
-	return stream, error
+	return stream, err
 }
