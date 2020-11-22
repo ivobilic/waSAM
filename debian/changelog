@@ -1,3 +1,10 @@
+golang-github-eyedeekay-sam3 (0.3.2.32) unreleased; urgency=medium
+
+  [ idk ]
+  * Include "Convenience Functions" in /helper
+
+ -- idk <hankhill19580@gmail.com>  Sun, 22 Nov 2020 12:49:13 -0500
+
 golang-github-eyedeekay-sam3 (0.3.2.31) unreleased; urgency=medium
 
   [ idk ]
