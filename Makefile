@@ -25,3 +25,5 @@ copier:
 fmt:
 	find . -name '*.go' -exec gofmt -w -s {} \;
 
+upload-linux:
+	gothub upload -R -u $(USER_GH) -r "$(packagename)" -t $(VERSION) -l `sha256sum ` -n "$(packagename)" -f "$(packagename)"
