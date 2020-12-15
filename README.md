@@ -57,6 +57,8 @@ func client(server I2PAddr) {
 func main() {
 	sam, _ := NewSAM(yoursam)
 	keys, _ := sam.NewKeys()
+	stream, _ := sam.NewStreamSession("serverTun", keys, Options_Medium)
+	listener, _ := stream.Listen()
 	go client(keys.Addr())
 	stream, _ := sam.NewStreamSession("serverTun", keys, Options_Medium)
 	listener, _ := stream.Listen()
