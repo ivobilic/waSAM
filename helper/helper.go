@@ -19,7 +19,7 @@ func NetListener(name, samaddr, keyspath string) (net.Listener, error) {
 // exist, keys will be generated and stored in that file.
 func I2PListener(name, samaddr, keyspath string) (*sam3.StreamListener, error) {
 	log.Printf("Starting and registering I2P service, please wait a couple of minutes...")
-	listener, err := I2PStreamSession(name,samaddr,keyspath)
+	listener, err := I2PStreamSession(name, samaddr, keyspath)
 
 	if keyspath != "" {
 		err = ioutil.WriteFile(keyspath+".i2p.public.txt", []byte(listener.Keys().Addr().Base32()), 0644)
