@@ -89,6 +89,10 @@ func StoreKeys(k I2PKeys, r string) error {
 	return StoreKeysIncompat(k, fi)
 }
 
+func (k I2PKeys) Network() string {
+	return k.Address.Network()
+}
+
 // Returns the public keys of the I2PKeys.
 func (k I2PKeys) Addr() I2PAddr {
 	return k.Address
