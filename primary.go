@@ -1,15 +1,15 @@
 package sam3
 
 import (
-//	"bufio"
-//	"bytes"
-//	"context"
-//	"errors"
-//	"io"
-//	"log"
+	//	"bufio"
+	//	"bytes"
+	//	"context"
+	//	"errors"
+	//	"io"
+	//	"log"
 	"net"
-//	"strconv"
-//	"strings"
+	//	"strconv"
+	//	"strings"
 	"time"
 
 	"github.com/eyedeekay/sam3/i2pkeys"
@@ -24,16 +24,16 @@ type PrimarySession struct {
 	Timeout  time.Duration
 	Deadline time.Time
 	sigType  string
-//	from     string
-//	to       string
+	//	from     string
+	//	to       string
 }
 
 func (ss *PrimarySession) From() string {
-	return ss.from
+	return "0"
 }
 
 func (ss *PrimarySession) To() string {
-	return ss.to
+	return "0"
 }
 
 func (ss *PrimarySession) SignatureType() string {
@@ -78,4 +78,3 @@ func (sam *SAM) NewPrimarySessionWithSignature(id string, keys i2pkeys.I2PKeys, 
 	}
 	return &PrimarySession{sam.Config.I2PConfig.Sam(), id, conn, keys, time.Duration(600 * time.Second), time.Now(), sigType, "0", "0"}, nil
 }
-

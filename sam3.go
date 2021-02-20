@@ -205,7 +205,15 @@ func (sam *SAM) newGenericSessionWithSignatureAndPorts(style, id, from, to strin
 	}
 
 	conn := sam.conn
-	scmsg := []byte("SESSION CREATE STYLE=" + style + " FROM_PORT=" + from + " TO_PORT=" + to + " ID=" + id + " DESTINATION=" + keys.String() + " " + sigType + " " + optStr + strings.Join(extras, " ") + "\n")
+	fp := ""
+	tp := ""
+	if from != "0" {
+		fp = " FROM_PORT=" + from
+	}
+	if to != "0" {
+		tp = " TO_PORT=" + to
+	}
+	scmsg := []byte("SESSION CREATE STYLE=" + style + fp + tp + " ID=" + id + " DESTINATION=" + keys.String() + " " + sigType + " " + optStr + strings.Join(extras, " ") + "\n")
 	for m, i := 0, 0; m != len(scmsg); i++ {
 		if i == 15 {
 			conn.Close()
