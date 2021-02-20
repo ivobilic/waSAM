@@ -1,0 +1,32 @@
+Format: 1.8
+Date: Sat, 7 Dec 2019 22:05:34 -0500
+Source: golang-github-eyedeekay-sam3
+Binary: golang-github-eyedeekay-sam3-dev
+Architecture: source all
+Version: 0.3.2.2
+Distribution: bionic
+Urgency: medium
+Maintainer: Debian Go Packaging Team <team+pkg-go@tracker.debian.org>
+Changed-By: idk <hankhill19580@gmail.com>
+Description:
+ golang-github-eyedeekay-sam3-dev - Go library for the I2P SAMv3.0 bridge,
+Changes:
+ golang-github-eyedeekay-sam3 (0.3.2.2) bionic; urgency=medium
+ .
+   [ idk ]
+   * Purge ramp
+Checksums-Sha1:
+ 01e03c0545dcb96145b53c9f4c0f819af660f564 962 golang-github-eyedeekay-sam3_0.3.2.2.dsc
+ c738a94c0ba8c2802757a29ab1d93aa4d41a28f3 55464 golang-github-eyedeekay-sam3_0.3.2.2.tar.xz
+ 98ca64b22e9f15d439f28e86a7de8da4fd1f4a54 16424 golang-github-eyedeekay-sam3-dev_0.3.2.2_all.deb
+ 688af971bec507538a5a767eed5631df06e7f29e 6509 golang-github-eyedeekay-sam3_0.3.2.2_amd64.buildinfo
+Checksums-Sha256:
+ 21e321363fe7bf8d17af11e188e72a4807f2dc5cd72645160566c97fb64a2063 962 golang-github-eyedeekay-sam3_0.3.2.2.dsc
+ 1fcd3b953a407265918acd4a1fcc1ddeed7e7f8529c56945a7301ab498824d32 55464 golang-github-eyedeekay-sam3_0.3.2.2.tar.xz
+ 323fcc0cc534bd53beab911673f30851403bddf2c883640204b955fefd1b817b 16424 golang-github-eyedeekay-sam3-dev_0.3.2.2_all.deb
+ 25b9a445494661e086077098fbbda3db00c7529ccbccceb361ddc34ffea75d4f 6509 golang-github-eyedeekay-sam3_0.3.2.2_amd64.buildinfo
+Files:
+ 413ea164b4e77276e5a3ea659f29138f 962 devel optional golang-github-eyedeekay-sam3_0.3.2.2.dsc
+ 8014b89109e19d9130dcaec77e587302 55464 devel optional golang-github-eyedeekay-sam3_0.3.2.2.tar.xz
+ 42c276e98f156c9ae6eb3ba3bdd1a358 16424 devel optional golang-github-eyedeekay-sam3-dev_0.3.2.2_all.deb
+ 335be739e03afe9e3086abf33f52589e 6509 devel optional golang-github-eyedeekay-sam3_0.3.2.2_amd64.buildinfo

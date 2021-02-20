@@ -155,6 +155,14 @@ func (k I2PKeys) String() string {
 	return k.Both
 }
 
+func (k I2PKeys) HostnameEntry(hostname string, opts crypto.SignerOpts) (string, error) {
+	sig, err := k.Sign(rand.Reader, []byte(hostname), opts)
+	if err != nil {
+		return "", err
+	}
+	return string(sig), nil
+}
+
 // I2PAddr represents an I2P destination, almost equivalent to an IP address.
 // This is the humongously huge base64 representation of such an address, which
 // really is just a pair of public keys and also maybe a certificate. (I2P hides
