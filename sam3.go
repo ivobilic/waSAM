@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"errors"
 	"io"
+	"math/rand"
 	"net"
 	"os"
 	"strings"
@@ -43,6 +44,17 @@ const (
 	Sig_ECDSA_SHA512_P521    = "SIGNATURE_TYPE=ECDSA_SHA512_P521"
 	Sig_EdDSA_SHA512_Ed25519 = "SIGNATURE_TYPE=EdDSA_SHA512_Ed25519"
 )
+
+var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+func RandString() string {
+	n := 4
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
+}
 
 // Creates a new controller for the I2P routers SAM bridge.
 func NewSAM(address string) (*SAM, error) {

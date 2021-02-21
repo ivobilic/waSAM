@@ -134,10 +134,10 @@ func (sam *PrimarySession) newGenericSubSessionWithSignatureAndPorts(style, id, 
 	}
 	text := string(buf[:n])
 	if strings.HasPrefix(text, session_ADDOK) {
-		if sam.keys.String() != text[len(session_ADDOK):len(text)-1] {
-			conn.Close()
-			return nil, errors.New("SAMv3 created a tunnel with keys other than the ones we asked it for")
-		}
+		//if sam.keys.String() != text[len(session_ADDOK):len(text)-1] {
+		//conn.Close()
+		//return nil, errors.New("SAMv3 created a tunnel with keys other than the ones we asked it for")
+		//}
 		return conn, nil //&StreamSession{id, conn, keys, nil, sync.RWMutex{}, nil}, nil
 	} else if text == session_DUPLICATE_ID {
 		conn.Close()
