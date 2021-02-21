@@ -15,6 +15,10 @@ import (
 	"github.com/eyedeekay/sam3/i2pkeys"
 )
 
+const (
+	session_ADDOK = "SESSION STATUS RESULT=OK"
+)
+
 // Represents a primary session.
 type PrimarySession struct {
 	samAddr  string          // address to the sam bridge (ipv4:port)
@@ -85,12 +89,12 @@ func (sam *SAM) NewPrimarySessionWithSignature(id string, keys i2pkeys.I2PKeys, 
 // I2CP/streaminglib-options as specified. Extra arguments can be specified by
 // setting extra to something else than []string{}.
 // This sam3 instance is now a session
-func (sam *PrimarySession) newGenericSubSession(style, id string, keys i2pkeys.I2PKeys, options []string, extras []string) (net.Conn, error) {
-	return sam.newGenericSubSessionWithSignature(style, id, keys, Sig_NONE, options, extras)
+func (sam *PrimarySession) newGenericSubSession(style, id string, extras []string) (net.Conn, error) {
+	return sam.newGenericSubSessionWithSignature(style, id, extras)
 }
 
-func (sam *PrimarySession) newGenericSubSessionWithSignature(style, id string, keys i2pkeys.I2PKeys, sigType string, options []string, extras []string) (net.Conn, error) {
-	return sam.newGenericSubSessionWithSignatureAndPorts(style, id, "0", "0", keys, sigType, options, extras)
+func (sam *PrimarySession) newGenericSubSessionWithSignature(style, id string, extras []string) (net.Conn, error) {
+	return sam.newGenericSubSessionWithSignatureAndPorts(style, id, "0", "0", extras)
 }
 
 // Creates a new session with the style of either "STREAM", "DATAGRAM" or "RAW",
@@ -98,12 +102,7 @@ func (sam *PrimarySession) newGenericSubSessionWithSignature(style, id string, k
 // I2CP/streaminglib-options as specified. Extra arguments can be specified by
 // setting extra to something else than []string{}.
 // This sam3 instance is now a session
-func (sam *PrimarySession) newGenericSubSessionWithSignatureAndPorts(style, id, from, to string, keys i2pkeys.I2PKeys, sigType string, options []string, extras []string) (net.Conn, error) {
-
-	optStr := ""
-	for _, opt := range options {
-		optStr += opt + " "
-	}
+func (sam *PrimarySession) newGenericSubSessionWithSignatureAndPorts(style, id, from, to string, extras []string) (net.Conn, error) {
 
 	conn := sam.conn
 	fp := ""
@@ -114,7 +113,7 @@ func (sam *PrimarySession) newGenericSubSessionWithSignatureAndPorts(style, id, 
 	if to != "0" {
 		tp = " TO_PORT=" + to
 	}
-	scmsg := []byte("SESSION ADD STYLE=" + style + fp + tp + " ID=" + id + " " + optStr + strings.Join(extras, " ") + "\n")
+	scmsg := []byte("SESSION ADD STYLE=" + style + fp + tp + " ID=" + id + " " + strings.Join(extras, " ") + "\n")
 	for m, i := 0, 0; m != len(scmsg); i++ {
 		if i == 15 {
 			conn.Close()
@@ -134,8 +133,8 @@ func (sam *PrimarySession) newGenericSubSessionWithSignatureAndPorts(style, id, 
 		return nil, err
 	}
 	text := string(buf[:n])
-	if strings.HasPrefix(text, session_OK) {
-		if keys.String() != text[len(session_OK):len(text)-1] {
+	if strings.HasPrefix(text, session_ADDOK) {
+		if sam.keys.String() != text[len(session_ADDOK):len(text)-1] {
 			conn.Close()
 			return nil, errors.New("SAMv3 created a tunnel with keys other than the ones we asked it for")
 		}
@@ -160,37 +159,27 @@ func (sam *PrimarySession) newGenericSubSessionWithSignatureAndPorts(style, id, 
 
 // Creates a new StreamSession with the I2CP- and streaminglib options as
 // specified. See the I2P documentation for a full list of options.
-func (sam *PrimarySession) NewStreamSession(id string, keys i2pkeys.I2PKeys, options []string) (*StreamSession, error) {
-	conn, err := sam.newGenericSubSession("STREAM", id, keys, options, []string{})
+func (sam *PrimarySession) NewStreamSubSession(id string) (*StreamSession, error) {
+	conn, err := sam.newGenericSubSession("STREAM", id, []string{})
 	if err != nil {
 		return nil, err
 	}
-	return &StreamSession{sam.Config.I2PConfig.Sam(), id, conn, keys, time.Duration(600 * time.Second), time.Now(), Sig_NONE, "0", "0"}, nil
+	return &StreamSession{sam.Config.I2PConfig.Sam(), id, conn, sam.keys, time.Duration(600 * time.Second), time.Now(), Sig_NONE, "0", "0"}, nil
 }
 
 // Creates a new StreamSession with the I2CP- and streaminglib options as
 // specified. See the I2P documentation for a full list of options.
-func (sam *PrimarySession) NewStreamSessionWithSignature(id string, keys i2pkeys.I2PKeys, options []string, sigType string) (*StreamSession, error) {
-	conn, err := sam.newGenericSubSessionWithSignature("STREAM", id, keys, sigType, options, []string{})
+func (sam *PrimarySession) NewStreamSessionWithPorts(id, from, to string) (*StreamSession, error) {
+	conn, err := sam.newGenericSubSessionWithSignatureAndPorts("STREAM", id, from, to, []string{})
 	if err != nil {
 		return nil, err
 	}
-	return &StreamSession{sam.Config.I2PConfig.Sam(), id, conn, keys, time.Duration(600 * time.Second), time.Now(), sigType, "0", "0"}, nil
-}
-
-// Creates a new StreamSession with the I2CP- and streaminglib options as
-// specified. See the I2P documentation for a full list of options.
-func (sam *PrimarySession) NewStreamSessionWithSignatureAndPorts(id, from, to string, keys i2pkeys.I2PKeys, options []string, sigType string) (*StreamSession, error) {
-	conn, err := sam.newGenericSubSessionWithSignatureAndPorts("STREAM", id, from, to, keys, sigType, options, []string{})
-	if err != nil {
-		return nil, err
-	}
-	return &StreamSession{sam.Config.I2PConfig.Sam(), id, conn, keys, time.Duration(600 * time.Second), time.Now(), sigType, from, to}, nil
+	return &StreamSession{sam.Config.I2PConfig.Sam(), id, conn, sam.keys, time.Duration(600 * time.Second), time.Now(), Sig_NONE, from, to}, nil
 }
 
 // Creates a new datagram session. udpPort is the UDP port SAM is listening on,
 // and if you set it to zero, it will use SAMs standard UDP port.
-func (s *PrimarySession) NewDatagramSession(id string, keys i2pkeys.I2PKeys, options []string, udpPort int) (*DatagramSession, error) {
+func (s *PrimarySession) NewDatagramSubSession(id string, udpPort int) (*DatagramSession, error) {
 	if udpPort > 65335 || udpPort < 0 {
 		return nil, errors.New("udpPort needs to be in the intervall 0-65335")
 	}
@@ -220,16 +209,16 @@ func (s *PrimarySession) NewDatagramSession(id string, keys i2pkeys.I2PKeys, opt
 		return nil, err
 	}
 	_, lport, err := net.SplitHostPort(udpconn.LocalAddr().String())
-	conn, err := s.newGenericSubSession("DATAGRAM", id, keys, options, []string{"PORT=" + lport})
+	conn, err := s.newGenericSubSession("DATAGRAM", id, []string{"PORT=" + lport})
 	if err != nil {
 		return nil, err
 	}
-	return &DatagramSession{s.Config.I2PConfig.Sam(), id, conn, udpconn, keys, rUDPAddr, nil}, nil
+	return &DatagramSession{s.Config.I2PConfig.Sam(), id, conn, udpconn, s.keys, rUDPAddr, nil}, nil
 }
 
 // Creates a new raw session. udpPort is the UDP port SAM is listening on,
 // and if you set it to zero, it will use SAMs standard UDP port.
-func (s *PrimarySession) NewRawSession(id string, keys i2pkeys.I2PKeys, options []string, udpPort int) (*RawSession, error) {
+func (s *PrimarySession) NewRawSubSession(id string, udpPort int) (*RawSession, error) {
 	if udpPort > 65335 || udpPort < 0 {
 		return nil, errors.New("udpPort needs to be in the intervall 0-65335")
 	}
@@ -259,9 +248,10 @@ func (s *PrimarySession) NewRawSession(id string, keys i2pkeys.I2PKeys, options 
 		return nil, err
 	}
 	_, lport, err := net.SplitHostPort(udpconn.LocalAddr().String())
-	conn, err := s.newGenericSubSession("RAW", id, keys, options, []string{"PORT=" + lport})
+	//	conn, err := s.newGenericSubSession("RAW", id, s.keys, options, []string{"PORT=" + lport})
+	conn, err := s.newGenericSubSession("RAW", id, []string{"PORT=" + lport})
 	if err != nil {
 		return nil, err
 	}
-	return &RawSession{s.Config.I2PConfig.Sam(), id, conn, udpconn, keys, rUDPAddr}, nil
+	return &RawSession{s.Config.I2PConfig.Sam(), id, conn, udpconn, s.keys, rUDPAddr}, nil
 }
