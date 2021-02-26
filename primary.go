@@ -169,12 +169,20 @@ func (sam *PrimarySession) NewStreamSubSession(id string) (*StreamSession, error
 
 // Creates a new StreamSession with the I2CP- and streaminglib options as
 // specified. See the I2P documentation for a full list of options.
-func (sam *PrimarySession) NewStreamSessionWithPorts(id, from, to string) (*StreamSession, error) {
+func (sam *PrimarySession) NewStreamSubSessionWithPorts(id, from, to string) (*StreamSession, error) {
 	conn, err := sam.newGenericSubSessionWithSignatureAndPorts("STREAM", id, from, to, []string{})
 	if err != nil {
 		return nil, err
 	}
 	return &StreamSession{sam.Config.I2PConfig.Sam(), id, conn, sam.keys, time.Duration(600 * time.Second), time.Now(), Sig_NONE, from, to}, nil
+}
+
+func (s *PrimarySession) I2PListener(name string) (*StreamListener, error) {
+	listener, err := s.NewStreamSubSession(name)
+	if err != nil {
+		return nil, err
+	}
+	return listener.Listen()
 }
 
 // Creates a new datagram session. udpPort is the UDP port SAM is listening on,

@@ -104,3 +104,40 @@ func I2PDatagramSession(name, samaddr, keyspath string) (*sam3.DatagramSession, 
 	gram, err := sam.NewDatagramSession(name, *keys, sam3.Options_Medium, 0)
 	return gram, err
 }
+
+// I2PPrimarySession is a convenience function which returns a sam3.PrimarySession.
+// It also takes care of setting a persisitent key on behalf of the user.
+func I2PPrimarySession(name, samaddr, keyspath string) (*sam3.PrimarySession, error) {
+	log.Printf("Starting and registering I2P session...")
+	sam, err := sam3.NewSAM(samaddr)
+	if err != nil {
+		log.Fatalf("error connecting to SAM to %s: %s", samaddr, err)
+	}
+	var keys *i2pkeys.I2PKeys
+	if keyspath != "" {
+		if _, err := os.Stat(keyspath + ".i2p.private"); os.IsNotExist(err) {
+			f, err := os.Create(keyspath + ".i2p.private")
+			if err != nil {
+				log.Fatalf("unable to open I2P keyfile for writing: %s", err)
+			}
+			defer f.Close()
+			tkeys, err := sam.NewKeys()
+			if err != nil {
+				log.Fatalf("unable to generate I2P Keys, %s", err)
+			}
+			keys = &tkeys
+			err = i2pkeys.StoreKeysIncompat(*keys, f)
+			if err != nil {
+				log.Fatalf("unable to save newly generated I2P Keys, %s", err)
+			}
+		} else {
+			tkeys, err := i2pkeys.LoadKeys(keyspath + ".i2p.private")
+			if err != nil {
+				log.Fatalf("unable to load I2P Keys: %e", err)
+			}
+			keys = &tkeys
+		}
+	}
+	gram, err := sam.NewPrimarySession(name, *keys, sam3.Options_Medium)
+	return gram, err
+}
