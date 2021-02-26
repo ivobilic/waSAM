@@ -64,15 +64,6 @@ func (ss *PrimarySession) LocalAddr() net.Addr {
 	return &aa
 }
 
-func (ss *PrimarySession) Read(b []byte) (n int, err error) {
-	//rint, _, rerr := s.ReadFrom(b)
-	return 0, nil // rint, rerr
-}
-
-func (s *PrimarySession) Write(b []byte) (int, error) {
-	return 0, nil // s.WriteTo(b, s.remoteAddr)
-}
-
 // Returns the keys associated with the stream session
 func (ss *PrimarySession) Keys() i2pkeys.I2PKeys {
 	return ss.keys
