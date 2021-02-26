@@ -211,9 +211,9 @@ func (a I2PAddr) Base64() string {
 	return string(a)
 }
 
-// Returns the I2P destination (base64-encoded)
+// Returns the I2P destination (base32-encoded)
 func (a I2PAddr) String() string {
-	return string(a)
+	return string(a.Base32())
 }
 
 // Returns "I2P"
