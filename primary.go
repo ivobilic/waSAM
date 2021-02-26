@@ -69,7 +69,7 @@ func (ss *PrimarySession) Read(b []byte) (n int, err error) {
 	return 0, nil // rint, rerr
 }
 
-func (s *DatagramSession) Write(b []byte) (int, error) {
+func (s *PrimarySession) Write(b []byte) (int, error) {
 	return 0, nil // s.WriteTo(b, s.remoteAddr)
 }
 
