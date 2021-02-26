@@ -59,6 +59,11 @@ func (ss *PrimarySession) Addr() i2pkeys.I2PAddr {
 	return ss.keys.Addr()
 }
 
+func (ss *PrimarySession) LocalAddr() net.Addr {
+	aa := ss.keys.Addr()
+	return &aa
+}
+
 // Returns the keys associated with the stream session
 func (ss *PrimarySession) Keys() i2pkeys.I2PKeys {
 	return ss.keys
