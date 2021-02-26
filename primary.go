@@ -159,7 +159,7 @@ func (sam *PrimarySession) newGenericSubSessionWithSignatureAndPorts(style, id, 
 
 // Creates a new StreamSession with the I2CP- and streaminglib options as
 // specified. See the I2P documentation for a full list of options.
-func (sam *PrimarySession) NewStreamSubSession(id string, protocol string) (*StreamSession, error) {
+func (sam *PrimarySession) NewStreamSubSession(id string) (*StreamSession, error) {
 	conn, err := sam.newGenericSubSession("STREAM", id, []string{})
 	if err != nil {
 		return nil, err
