@@ -86,7 +86,7 @@ func (sam *PrimarySession) Dial(network, addr string) (net.Conn, error) {
 		return dgsess.DialI2PRemote(network, netaddr)
 	}
 	if network == "tcp" || network == "tcp4" || network == "tcp6" {
-		stsess, err := sam.NewStreamSubSession(network + addr[0:4])
+		stsess, err := sam.NewUniqueStreamSubSession(network + addr[0:4])
 		if err != nil {
 			return nil, err
 		}
