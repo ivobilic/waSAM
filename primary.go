@@ -79,11 +79,7 @@ func (sam *PrimarySession) Dial(network, addr string) (net.Conn, error) {
 		if err != nil {
 			return nil, err
 		}
-		netaddr, err := dgsess.Lookup(addr)
-		if err != nil {
-			return nil, err
-		}
-		return dgsess.DialI2PRemote(network, netaddr)
+		return dgsess.Dial(network, addr)
 	}
 	if network == "tcp" || network == "tcp4" || network == "tcp6" {
 		stsess, err := sam.NewUniqueStreamSubSession(network + addr[0:4])
