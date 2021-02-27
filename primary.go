@@ -1,12 +1,9 @@
 package sam3
 
 import (
-	//	"bufio"
-	//	"bytes"
-	//	"context"
 	"errors"
-	//	"io"
-	//	"log"
+	"fmt"
+	"math/rand"
 	"net"
 	"strconv"
 	"strings"
@@ -18,6 +15,13 @@ import (
 const (
 	session_ADDOK = "SESSION STATUS RESULT=OK"
 )
+
+func randport() string {
+	s := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(s)
+	p := r.Intn(55534) + 10000
+	return strconv.Itoa(p)
+}
 
 // Represents a primary session.
 type PrimarySession struct {
@@ -67,6 +71,28 @@ func (ss *PrimarySession) LocalAddr() net.Addr {
 // Returns the keys associated with the stream session
 func (ss *PrimarySession) Keys() i2pkeys.I2PKeys {
 	return ss.keys
+}
+
+func (sam *PrimarySession) Dial(network, addr string) (net.Conn, error) {
+	if network == "udp" || network == "udp4" || network == "udp6" {
+		dgsess, err := sam.NewDatagramSubSession(network+addr[0:4], 0)
+		if err != nil {
+			return nil, err
+		}
+		netaddr, err := dgsess.Lookup(addr)
+		if err != nil {
+			return nil, err
+		}
+		return dgsess.DialI2PRemote(network, netaddr)
+	}
+	if network == "tcp" || network == "tcp4" || network == "tcp6" {
+		stsess, err := sam.NewStreamSubSession(network + addr[0:4])
+		if err != nil {
+			return nil, err
+		}
+		return stsess.Dial(network, addr)
+	}
+	return nil, fmt.Errorf("Error: Must specify a valid network type")
 }
 
 // Creates a new PrimarySession with the I2CP- and streaminglib options as
@@ -170,6 +196,16 @@ func (sam *PrimarySession) NewStreamSubSession(id string) (*StreamSession, error
 		return nil, err
 	}
 	return &StreamSession{sam.Config.I2PConfig.Sam(), id, conn, sam.keys, time.Duration(600 * time.Second), time.Now(), Sig_NONE, "0", "0"}, nil
+}
+
+// Creates a new StreamSession with the I2CP- and streaminglib options as
+// specified. See the I2P documentation for a full list of options.
+func (sam *PrimarySession) NewUniqueStreamSubSession(id string) (*StreamSession, error) {
+	conn, err := sam.newGenericSubSession("STREAM", id, []string{})
+	if err != nil {
+		return nil, err
+	}
+	return &StreamSession{sam.Config.I2PConfig.Sam(), id, conn, sam.keys, time.Duration(600 * time.Second), time.Now(), Sig_NONE, randport(), "0"}, nil
 }
 
 // Creates a new StreamSession with the I2CP- and streaminglib options as
