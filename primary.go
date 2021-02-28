@@ -117,6 +117,28 @@ func (sam *PrimarySession) DialUDPI2P(network, laddr, raddr string) (*DatagramSe
 	return dgsess.Dial(network, raddr)
 }
 
+func (s *PrimarySession) Lookup(name string) (a net.Addr, err error) {
+	var sam *SAM
+	sam, err = NewSAM(s.samAddr)
+	if err == nil {
+		defer sam.Close()
+		a, err = sam.Lookup(name)
+	}
+	return
+}
+
+func (sam *PrimarySession) Resolve(network, addr string) (net.Addr, error) {
+	return sam.Lookup(addr)
+}
+
+func (sam *PrimarySession) ResolveTCPAddr(network, dest string) (net.Addr, error) {
+	return sam.Lookup(dest)
+}
+
+func (sam *PrimarySession) ResolveUDPAddr(network, dest string) (net.Addr, error) {
+	return sam.Lookup(dest)
+}
+
 // Creates a new PrimarySession with the I2CP- and streaminglib options as
 // specified. See the I2P documentation for a full list of options.
 func (sam *SAM) NewPrimarySession(id string, keys i2pkeys.I2PKeys, options []string) (*PrimarySession, error) {
