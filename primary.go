@@ -75,20 +75,30 @@ func (ss *PrimarySession) Keys() i2pkeys.I2PKeys {
 
 func (sam *PrimarySession) Dial(network, addr string) (net.Conn, error) {
 	if network == "udp" || network == "udp4" || network == "udp6" {
-		dgsess, err := sam.NewDatagramSubSession(network+addr[0:4], 0)
-		if err != nil {
-			return nil, err
-		}
-		return dgsess.Dial(network, addr)
+		return s.DialUDP(network, network+addr[0:4], addr)
 	}
 	if network == "tcp" || network == "tcp4" || network == "tcp6" {
-		stsess, err := sam.NewUniqueStreamSubSession(network + addr[0:4])
-		if err != nil {
-			return nil, err
-		}
-		return stsess.Dial(network, addr)
+		return s.DialTCP(network, network+addr[0:4], addr)
 	}
 	return nil, fmt.Errorf("Error: Must specify a valid network type")
+}
+
+// DialTCP implements x/dialer
+func (sam *PrimarySession) DialTCP(network, laddr, raddr string) (net.Conn, error) {
+	stsess, err := sam.NewUniqueStreamSubSession(network + addr[0:4])
+	if err != nil {
+		return nil, err
+	}
+	return stsess.Dial(network, addr)
+}
+
+// DialUDP implements x/dialer
+func (sam *PrimarySession) DialUDP(network, laddr, raddr string) (net.PacketConn, error) {
+	dgsess, err := sam.NewDatagramSubSession(network+addr[0:4], 0)
+	if err != nil {
+		return nil, err
+	}
+	return dgsess.Dial(network, addr)
 }
 
 // Creates a new PrimarySession with the I2CP- and streaminglib options as
