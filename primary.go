@@ -78,13 +78,21 @@ func (sam *PrimarySession) Dial(network, addr string) (net.Conn, error) {
 		return sam.DialUDPI2P(network, network+addr[0:4], addr)
 	}
 	if network == "tcp" || network == "tcp4" || network == "tcp6" {
-		return sam.DialTCP(network, network+addr[0:4], addr)
+		return sam.DialTCPI2P(network, network+addr[0:4], addr)
 	}
 	return nil, fmt.Errorf("Error: Must specify a valid network type")
 }
 
 // DialTCP implements x/dialer
-func (sam *PrimarySession) DialTCP(network, laddr, raddr string) (net.Conn, error) {
+func (sam *PrimarySession) DialTCP(network string, laddr, raddr net.Addr) (net.Conn, error) {
+	stsess, err := sam.NewUniqueStreamSubSession(network + sam.Addr().Base32()[0:4])
+	if err != nil {
+		return nil, err
+	}
+	return stsess.Dial(network, raddr.String())
+}
+
+func (sam *PrimarySession) DialTCPI2P(network string, laddr, raddr string) (net.Conn, error) {
 	stsess, err := sam.NewUniqueStreamSubSession(network + laddr)
 	if err != nil {
 		return nil, err
@@ -93,12 +101,12 @@ func (sam *PrimarySession) DialTCP(network, laddr, raddr string) (net.Conn, erro
 }
 
 // DialUDP implements x/dialer
-func (sam *PrimarySession) DialUDP(network, laddr, raddr string) (net.PacketConn, error) {
-	dgsess, err := sam.NewDatagramSubSession(network+laddr, 0)
+func (sam *PrimarySession) DialUDP(network string, laddr, raddr net.Addr) (net.PacketConn, error) {
+	dgsess, err := sam.NewDatagramSubSession(network+sam.Addr().Base32()[0:4], 0)
 	if err != nil {
 		return nil, err
 	}
-	return dgsess.Dial(network, raddr)
+	return dgsess.Dial(network, raddr.String())
 }
 
 func (sam *PrimarySession) DialUDPI2P(network, laddr, raddr string) (*DatagramSession, error) {
