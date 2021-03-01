@@ -85,7 +85,7 @@ func (sam *PrimarySession) Dial(network, addr string) (net.Conn, error) {
 
 // DialTCP implements x/dialer
 func (sam *PrimarySession) DialTCP(network string, laddr, raddr net.Addr) (net.Conn, error) {
-	stsess, err := sam.NewUniqueStreamSubSession(network + sam.Addr().Base32()[0:4])
+	stsess, err := sam.NewUniqueStreamSubSession(network+sam.Addr().Base32()[0:4]+RandString())
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +93,7 @@ func (sam *PrimarySession) DialTCP(network string, laddr, raddr net.Addr) (net.C
 }
 
 func (sam *PrimarySession) DialTCPI2P(network string, laddr, raddr string) (net.Conn, error) {
-	stsess, err := sam.NewUniqueStreamSubSession(network + laddr)
+	stsess, err := sam.NewUniqueStreamSubSession(network+laddr+RandString())
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func (sam *PrimarySession) DialTCPI2P(network string, laddr, raddr string) (net.
 
 // DialUDP implements x/dialer
 func (sam *PrimarySession) DialUDP(network string, laddr, raddr net.Addr) (net.PacketConn, error) {
-	dgsess, err := sam.NewDatagramSubSession(network+sam.Addr().Base32()[0:4], 0)
+	dgsess, err := sam.NewDatagramSubSession(network+sam.Addr().Base32()[0:4]+RandString(), 0)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +110,7 @@ func (sam *PrimarySession) DialUDP(network string, laddr, raddr net.Addr) (net.P
 }
 
 func (sam *PrimarySession) DialUDPI2P(network, laddr, raddr string) (*DatagramSession, error) {
-	dgsess, err := sam.NewDatagramSubSession(network+laddr, 0)
+	dgsess, err := sam.NewDatagramSubSession(network+laddr+RandString(), 0)
 	if err != nil {
 		return nil, err
 	}
