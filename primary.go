@@ -33,6 +33,8 @@ type PrimarySession struct {
 	Deadline time.Time
 	sigType  string
 	Config   SAMEmit
+	stsess   map[string]StreamSession
+	dgsess   map[string]DatagramSession
 	//	from     string
 	//	to       string
 }
@@ -85,36 +87,52 @@ func (sam *PrimarySession) Dial(network, addr string) (net.Conn, error) {
 
 // DialTCP implements x/dialer
 func (sam *PrimarySession) DialTCP(network string, laddr, raddr net.Addr) (net.Conn, error) {
-	stsess, err := sam.NewUniqueStreamSubSession(network+sam.Addr().Base32()[0:4]+RandString())
-	if err != nil {
-		return nil, err
+	_, ok := sam.stsess[network+raddr.String()[0:4]]
+	if !ok {
+		stsess, err := sam.NewUniqueStreamSubSession(network + raddr.String()[0:4])
+		if err != nil {
+			return nil, err
+		}
+		sam.stsess[network+raddr.String()[0:4]] = stsess
 	}
-	return stsess.Dial(network, raddr.String())
+	return sam.stsess[network+raddr.String()[0:4]].Dial(network, raddr.String())
 }
 
 func (sam *PrimarySession) DialTCPI2P(network string, laddr, raddr string) (net.Conn, error) {
-	stsess, err := sam.NewUniqueStreamSubSession(network+laddr+RandString())
-	if err != nil {
-		return nil, err
+	_, ok := sam.stsess[network+raddr.String()[0:4]]
+	if !ok {
+		stsess, err := sam.NewUniqueStreamSubSession(network + laddr)
+		if err != nil {
+			return nil, err
+		}
+		sam.stsess[network+raddr.String()[0:4]] = stsess
 	}
-	return stsess.Dial(network, raddr)
+	return sam.stsess[network+raddr.String()[0:4]].Dial(network, raddr.String())
 }
 
 // DialUDP implements x/dialer
 func (sam *PrimarySession) DialUDP(network string, laddr, raddr net.Addr) (net.PacketConn, error) {
-	dgsess, err := sam.NewDatagramSubSession(network+sam.Addr().Base32()[0:4]+RandString(), 0)
-	if err != nil {
-		return nil, err
+	_, ok := sam.dgsess[network+raddr.String()[0:4]]
+	if !ok {
+		dgsess, err := sam.NewDatagramSubSession(network+raddr.String()[0:4], 0)
+		if err != nil {
+			return nil, err
+		}
+		sam.dgsess[network+raddr.String()[0:4]] = dgsess
 	}
 	return dgsess.Dial(network, raddr.String())
 }
 
 func (sam *PrimarySession) DialUDPI2P(network, laddr, raddr string) (*DatagramSession, error) {
-	dgsess, err := sam.NewDatagramSubSession(network+laddr+RandString(), 0)
-	if err != nil {
-		return nil, err
+	_, ok := sam.dgsess[network+raddr.String()[0:4]]
+	if !ok {
+		dgsess, err := sam.NewDatagramSubSession(network+laddr, 0)
+		if err != nil {
+			return nil, err
+		}
+		sam.dgsess[network+raddr.String()[0:4]] = dgsess
 	}
-	return dgsess.Dial(network, raddr)
+	return dgsess.Dial(network, raddr.String())
 }
 
 func (s *PrimarySession) Lookup(name string) (a net.Addr, err error) {
