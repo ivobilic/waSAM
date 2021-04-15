@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"errors"
 	"io"
+	"math/rand"
 	"net"
 	"os"
 	"strings"
@@ -43,6 +44,17 @@ const (
 	Sig_ECDSA_SHA512_P521    = "SIGNATURE_TYPE=ECDSA_SHA512_P521"
 	Sig_EdDSA_SHA512_Ed25519 = "SIGNATURE_TYPE=EdDSA_SHA512_Ed25519"
 )
+
+var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+func RandString() string {
+	n := 4
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
+}
 
 // Creates a new controller for the I2P routers SAM bridge.
 func NewSAM(address string) (*SAM, error) {
@@ -205,7 +217,15 @@ func (sam *SAM) newGenericSessionWithSignatureAndPorts(style, id, from, to strin
 	}
 
 	conn := sam.conn
-	scmsg := []byte("SESSION CREATE STYLE=" + style + " FROM_PORT=" + from + " TO_PORT=" + to + " ID=" + id + " DESTINATION=" + keys.String() + " " + sigType + " " + optStr + strings.Join(extras, " ") + "\n")
+	fp := ""
+	tp := ""
+	if from != "0" {
+		fp = " FROM_PORT=" + from
+	}
+	if to != "0" {
+		tp = " TO_PORT=" + to
+	}
+	scmsg := []byte("SESSION CREATE STYLE=" + style + fp + tp + " ID=" + id + " DESTINATION=" + keys.String() + " " + optStr + strings.Join(extras, " ") + "\n")
 	for m, i := 0, 0; m != len(scmsg); i++ {
 		if i == 15 {
 			conn.Close()

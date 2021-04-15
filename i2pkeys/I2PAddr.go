@@ -2,6 +2,9 @@ package i2pkeys
 
 import (
 	"bytes"
+	"crypto"
+	"crypto/ed25519"
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base32"
 	"encoding/base64"
@@ -9,6 +12,8 @@ import (
 	"io"
 	"os"
 	"strings"
+
+	"github.com/eyedeekay/goSam"
 )
 
 var (
@@ -98,10 +103,64 @@ func (k I2PKeys) Addr() I2PAddr {
 	return k.Address
 }
 
+func (k I2PKeys) Public() crypto.PublicKey {
+	return k.Address
+}
+
+func (k I2PKeys) Private() []byte {
+	src := strings.Split(k.String(), k.Addr().String())[0]
+	var dest []byte
+	_, err := i2pB64enc.Decode(dest, []byte(src))
+	panic(err)
+	return dest
+}
+
+type SecretKey interface {
+	Sign(rand io.Reader, digest []byte, opts crypto.SignerOpts) (signature []byte, err error)
+}
+
+func (k I2PKeys) SecretKey() SecretKey {
+	var pk ed25519.PrivateKey = k.Private()
+	return pk
+}
+
+func (k I2PKeys) PrivateKey() crypto.PrivateKey {
+	var pk ed25519.PrivateKey = k.Private()
+	_, err := pk.Sign(rand.Reader, []byte("nonsense"), crypto.Hash(0))
+	if err != nil {
+		//TODO: Elgamal, P256, P384, P512, GOST? keys?
+	}
+	return pk
+}
+
+func (k I2PKeys) Ed25519PrivateKey() *ed25519.PrivateKey {
+	return k.SecretKey().(*ed25519.PrivateKey)
+}
+
+/*func (k I2PKeys) ElgamalPrivateKey() *ed25519.PrivateKey {
+	return k.SecretKey().(*ed25519.PrivateKey)
+}*/
+
+//func (k I2PKeys) Decrypt(rand io.Reader, msg []byte, opts crypto.DecrypterOpts) (plaintext []byte, err error) {
+//return k.SecretKey().(*ed25519.PrivateKey).Decrypt(rand, msg, opts)
+//}
+
+func (k I2PKeys) Sign(rand io.Reader, digest []byte, opts crypto.SignerOpts) (signature []byte, err error) {
+	return k.SecretKey().(*ed25519.PrivateKey).Sign(rand, digest, opts)
+}
+
 // Returns the keys (both public and private), in I2Ps base64 format. Use this
 // when you create sessions.
 func (k I2PKeys) String() string {
 	return k.Both
+}
+
+func (k I2PKeys) HostnameEntry(hostname string, opts crypto.SignerOpts) (string, error) {
+	sig, err := k.Sign(rand.Reader, []byte(hostname), opts)
+	if err != nil {
+		return "", err
+	}
+	return string(sig), nil
 }
 
 // I2PAddr represents an I2P destination, almost equivalent to an IP address.
@@ -152,9 +211,9 @@ func (a I2PAddr) Base64() string {
 	return string(a)
 }
 
-// Returns the I2P destination (base64-encoded)
+// Returns the I2P destination (base32-encoded)
 func (a I2PAddr) String() string {
-	return string(a)
+	return string(a.Base32())
 }
 
 // Returns "I2P"
@@ -236,4 +295,31 @@ func (addr I2PAddr) DestHash() (h I2PDestHash) {
 // sense, unless "anything" is an I2P destination of some sort.
 func Base32(anything string) string {
 	return I2PAddr(anything).Base32()
+}
+
+func NewDestination(samaddr string, sigType ...string) (I2PKeys, error) {
+	if samaddr == "" {
+		samaddr = "127.0.0.1:7656"
+	}
+	client, err := goSam.NewClient(samaddr)
+	if err != nil {
+		return I2PKeys{}, err
+	}
+	var sigtmp string
+	if len(sigType) > 0 {
+		sigtmp = sigType[0]
+	}
+	pub, priv, err := client.NewDestination(sigtmp)
+	if err != nil {
+		return I2PKeys{}, err
+	}
+	addr, err := NewI2PAddrFromBytes([]byte(pub))
+	if err != nil {
+		return I2PKeys{}, err
+	}
+	keys := NewKeys(addr, priv+pub)
+	if err != nil {
+		return I2PKeys{}, err
+	}
+	return keys, nil
 }

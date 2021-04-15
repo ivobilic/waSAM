@@ -67,6 +67,27 @@ func (s *DatagramSession) B32() string {
 	return s.keys.Addr().Base32()
 }
 
+func (s *DatagramSession) Dial(net string, addr string) (*DatagramSession, error) {
+	netaddr, err := s.Lookup(addr)
+	if err != nil {
+		return nil, err
+	}
+	return s.DialI2PRemote(net, netaddr)
+}
+
+func (s *DatagramSession) DialRemote(net, addr string) (net.PacketConn, error) {
+	netaddr, err := s.Lookup(addr)
+	if err != nil {
+		return nil, err
+	}
+	return s.DialI2PRemote(net, netaddr)
+}
+
+func (s *DatagramSession) DialI2PRemote(net string, addr net.Addr) (*DatagramSession, error) {
+	s.remoteAddr = addr.(*i2pkeys.I2PAddr)
+	return s, nil
+}
+
 func (s *DatagramSession) RemoteAddr() net.Addr {
 	return s.remoteAddr
 }

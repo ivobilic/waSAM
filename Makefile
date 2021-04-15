@@ -1,6 +1,6 @@
 
 USER_GH=eyedeekay
-VERSION=0.32.32
+VERSION=0.33.001
 packagename=sam3
 
 echo:
