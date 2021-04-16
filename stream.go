@@ -28,6 +28,18 @@ type StreamSession struct {
 	to       string
 }
 
+func (s *StreamSession) SetDeadline(t time.Time) error {
+	return s.conn.SetDeadline(t)
+}
+
+func (s *StreamSession) SetReadDeadline(t time.Time) error {
+	return s.conn.SetReadDeadline(t)
+}
+
+func (s *StreamSession) SetWriteDeadline(t time.Time) error {
+	return s.conn.SetWriteDeadline(t)
+}
+
 func (ss *StreamSession) From() string {
 	return ss.from
 }
