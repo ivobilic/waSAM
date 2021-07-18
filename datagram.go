@@ -84,7 +84,12 @@ func (s *DatagramSession) DialRemote(net, addr string) (net.PacketConn, error) {
 }
 
 func (s *DatagramSession) DialI2PRemote(net string, addr net.Addr) (*DatagramSession, error) {
-	s.remoteAddr = addr.(*i2pkeys.I2PAddr)
+	switch addr.(type) {
+	case *i2pkeys.I2PAddr:
+		s.remoteAddr = addr.(*i2pkeys.I2PAddr)
+	case i2pkeys.I2PAddr:
+		s.remoteAddr = addr.(i2pkeys.I2PAddr)
+	}
 	return s, nil
 }
 
