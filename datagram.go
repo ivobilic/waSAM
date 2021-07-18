@@ -88,7 +88,8 @@ func (s *DatagramSession) DialI2PRemote(net string, addr net.Addr) (*DatagramSes
 	case *i2pkeys.I2PAddr:
 		s.remoteAddr = addr.(*i2pkeys.I2PAddr)
 	case i2pkeys.I2PAddr:
-		s.remoteAddr = &addr.(i2pkeys.I2PAddr)
+		i2paddr := addr.(i2pkeys.I2PAddr)
+		s.remoteAddr = &i2paddr
 	}
 	return s, nil
 }
