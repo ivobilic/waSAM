@@ -1,9 +1,10 @@
 package sam3
 
 import (
-	"github.com/eyedeekay/sam3/i2pkeys"
 	"net"
 	"time"
+
+	"github.com/eyedeekay/sam3/i2pkeys"
 )
 
 /*

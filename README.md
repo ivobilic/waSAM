@@ -23,7 +23,7 @@ This library is much better than ccondom (that use BOB), much more stable and mu
 
 **Does not work:**
 
-* Everything works! :D
+* Stream Forwarding
 * Probably needs some real-world testing
 
 ## Documentation ##
@@ -38,16 +38,17 @@ This library is much better than ccondom (that use BOB), much more stable and mu
 package main
 
 import (
-	"github.com/majestrate/i2p-tools/sam3"
+	"github.com/eyedeekay/sam3"
+	"github.com/eyedeekay/sam3/i2pkeys"
 	"fmt"
 )
 
 const yoursam = "127.0.0.1:7656" // sam bridge
 
-func client(server I2PAddr) {
-	sam, _ := NewSAM(yoursam)
+func client(server i2pkeys.I2PAddr) {
+	sam, _ := sam3.NewSAM(yoursam)
 	keys, _ := sam.NewKeys()
-	stream, _ := sam.NewStreamSession("clientTun", keys, Options_Small)
+	stream, _ := sam.NewStreamSession("clientTun", keys, sam3.Options_Small)
 	fmt.Println("Client: Connecting to " + server.Base32())
 	conn, _ := stream.DialI2P(server)
 	conn.Write([]byte("Hello world!"))
@@ -57,11 +58,9 @@ func client(server I2PAddr) {
 func main() {
 	sam, _ := NewSAM(yoursam)
 	keys, _ := sam.NewKeys()
-	stream, _ := sam.NewStreamSession("serverTun", keys, Options_Medium)
+	stream, _ := sam.NewStreamSession("serverTun", keys, sam3.Options_Medium)
 	listener, _ := stream.Listen()
 	go client(keys.Addr())
-	stream, _ := sam.NewStreamSession("serverTun", keys, Options_Medium)
-	listener, _ := stream.Listen()
 	conn, _ := listener.Accept()
 	buf := make([]byte, 4096)
 	n, _ := conn.Read(buf)
