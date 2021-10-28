@@ -27,7 +27,8 @@ func I2PListener(name, samaddr, keyspath string) (*sam3.StreamListener, error) {
 			log.Fatalf("error storing I2P base32 address in adjacent text file, %s", err)
 		}
 	}
-	return listener.Listen() //, err
+	log.Printf("Listening on: %s", listener.Addr().Base32())
+	return listener.Listen()
 }
 
 // I2PStreamSession is a convenience function which returns a sam3.StreamSession instead
@@ -39,30 +40,9 @@ func I2PStreamSession(name, samaddr, keyspath string) (*sam3.StreamSession, erro
 	if err != nil {
 		log.Fatalf("error connecting to SAM to %s: %s", samaddr, err)
 	}
-	var keys *i2pkeys.I2PKeys
-	if keyspath != "" {
-		if _, err := os.Stat(keyspath + ".i2p.private"); os.IsNotExist(err) {
-			f, err := os.Create(keyspath + ".i2p.private")
-			if err != nil {
-				log.Fatalf("unable to open I2P keyfile for writing: %s", err)
-			}
-			defer f.Close()
-			tkeys, err := sam.NewKeys()
-			if err != nil {
-				log.Fatalf("unable to generate I2P Keys, %s", err)
-			}
-			keys = &tkeys
-			err = i2pkeys.StoreKeysIncompat(*keys, f)
-			if err != nil {
-				log.Fatalf("unable to save newly generated I2P Keys, %s", err)
-			}
-		} else {
-			tkeys, err := i2pkeys.LoadKeys(keyspath + ".i2p.private")
-			if err != nil {
-				log.Fatalf("unable to load I2P Keys: %e", err)
-			}
-			keys = &tkeys
-		}
+	keys, err := GenerateOrLoadKeys(keyspath, sam)
+	if err != nil {
+		return nil, err
 	}
 	stream, err := sam.NewStreamSession(name, *keys, sam3.Options_Medium)
 	return stream, err
@@ -76,30 +56,9 @@ func I2PDatagramSession(name, samaddr, keyspath string) (*sam3.DatagramSession, 
 	if err != nil {
 		log.Fatalf("error connecting to SAM to %s: %s", samaddr, err)
 	}
-	var keys *i2pkeys.I2PKeys
-	if keyspath != "" {
-		if _, err := os.Stat(keyspath + ".i2p.private"); os.IsNotExist(err) {
-			f, err := os.Create(keyspath + ".i2p.private")
-			if err != nil {
-				log.Fatalf("unable to open I2P keyfile for writing: %s", err)
-			}
-			defer f.Close()
-			tkeys, err := sam.NewKeys()
-			if err != nil {
-				log.Fatalf("unable to generate I2P Keys, %s", err)
-			}
-			keys = &tkeys
-			err = i2pkeys.StoreKeysIncompat(*keys, f)
-			if err != nil {
-				log.Fatalf("unable to save newly generated I2P Keys, %s", err)
-			}
-		} else {
-			tkeys, err := i2pkeys.LoadKeys(keyspath + ".i2p.private")
-			if err != nil {
-				log.Fatalf("unable to load I2P Keys: %e", err)
-			}
-			keys = &tkeys
-		}
+	keys, err := GenerateOrLoadKeys(keyspath, sam)
+	if err != nil {
+		return nil, err
 	}
 	gram, err := sam.NewDatagramSession(name, *keys, sam3.Options_Medium, 0)
 	return gram, err
@@ -113,31 +72,46 @@ func I2PPrimarySession(name, samaddr, keyspath string) (*sam3.PrimarySession, er
 	if err != nil {
 		log.Fatalf("error connecting to SAM to %s: %s", samaddr, err)
 	}
-	var keys *i2pkeys.I2PKeys
-	if keyspath != "" {
-		if _, err := os.Stat(keyspath + ".i2p.private"); os.IsNotExist(err) {
-			f, err := os.Create(keyspath + ".i2p.private")
-			if err != nil {
-				log.Fatalf("unable to open I2P keyfile for writing: %s", err)
-			}
-			defer f.Close()
-			tkeys, err := sam.NewKeys()
-			if err != nil {
-				log.Fatalf("unable to generate I2P Keys, %s", err)
-			}
-			keys = &tkeys
-			err = i2pkeys.StoreKeysIncompat(*keys, f)
-			if err != nil {
-				log.Fatalf("unable to save newly generated I2P Keys, %s", err)
-			}
-		} else {
-			tkeys, err := i2pkeys.LoadKeys(keyspath + ".i2p.private")
-			if err != nil {
-				log.Fatalf("unable to load I2P Keys: %e", err)
-			}
-			keys = &tkeys
-		}
+	keys, err := GenerateOrLoadKeys(keyspath, sam)
+	if err != nil {
+		return nil, err
 	}
 	gram, err := sam.NewPrimarySession(name, *keys, sam3.Options_Medium)
 	return gram, err
+}
+
+func GenerateOrLoadKeys(keyspath string, sam *sam3.SAM) (keys *i2pkeys.I2PKeys, err error) {
+	if sam == nil {
+		sam, err = sam3.NewSAM("127.0.0.1:7657")
+		if err != nil {
+			return nil, err
+		}
+	}
+	if _, err := os.Stat(keyspath + ".i2p.private"); os.IsNotExist(err) {
+		f, err := os.Create(keyspath + ".i2p.private")
+		if err != nil {
+			log.Fatalf("unable to open I2P keyfile for writing: %s", err)
+		}
+		defer f.Close()
+		tkeys, err := sam.NewKeys()
+		if err != nil {
+			log.Fatalf("unable to generate I2P Keys, %s", err)
+		}
+		keys = &tkeys
+		err = i2pkeys.StoreKeysIncompat(*keys, f)
+		if err != nil {
+			log.Fatalf("unable to save newly generated I2P Keys, %s", err)
+		}
+	} else {
+		tkeys, err := i2pkeys.LoadKeys(keyspath + ".i2p.private")
+		if err != nil {
+			log.Fatalf("unable to load I2P Keys: %e", err)
+		}
+		keys = &tkeys
+	}
+	return keys, nil
+}
+
+func GenerateKeys(keyspath string) (keys *i2pkeys.I2PKeys, err error) {
+	return GenerateOrLoadKeys(keyspath, nil)
 }

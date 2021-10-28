@@ -7,6 +7,7 @@ import (
 	"log"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/eyedeekay/sam3/i2pkeys"
 )
@@ -98,11 +99,12 @@ func Test_PrimaryStreamingServerClient(t *testing.T) {
 	}
 	defer sam.Close()
 	fmt.Println("\tServer: Creating tunnel")
-	ss, err := sam.NewStreamSubSession("primaryExampleServerTun")
+	ss, err := sam.NewUniqueStreamSubSession("primaryExampleServerTun")
 	if err != nil {
 		return
 	}
 	defer ss.Close()
+	time.Sleep(time.Second*10)
 	c, w := make(chan bool), make(chan bool)
 	go func(c, w chan (bool)) {
 		if !(<-w) {
