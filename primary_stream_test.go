@@ -104,7 +104,7 @@ func Test_PrimaryStreamingServerClient(t *testing.T) {
 		return
 	}
 	defer ss.Close()
-	time.Sleep(time.Second*10)
+	time.Sleep(time.Second * 10)
 	c, w := make(chan bool), make(chan bool)
 	go func(c, w chan (bool)) {
 		if !(<-w) {
