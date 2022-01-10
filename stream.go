@@ -178,7 +178,7 @@ func (s *StreamSession) Dial(n, addr string) (c net.Conn, err error) {
 	var i2paddr i2pkeys.I2PAddr
 	var host string
 	host, _, err = net.SplitHostPort(addr)
-	if err == nil {
+	if err = IgnorePortError(err); err == nil {
 		// check for name
 		if strings.HasSuffix(host, ".b32.i2p") || strings.HasSuffix(host, ".i2p") {
 			// name lookup

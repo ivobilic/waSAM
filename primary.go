@@ -137,9 +137,7 @@ func (sam *PrimarySession) DialUDPI2P(network, laddr, raddr string) (*DatagramSe
 
 func (s *PrimarySession) Lookup(name string) (a net.Addr, err error) {
 	var sam *SAM
-	if len(strings.Split(name, ":")) <= 1 {
-		name += ":0"
-	}
+	name = strings.Split(name, ":")[0]
 	sam, err = NewSAM(s.samAddr)
 	if err == nil {
 		defer sam.Close()
@@ -163,7 +161,7 @@ func (sam *PrimarySession) ResolveUDPAddr(network, dest string) (net.Addr, error
 // Creates a new PrimarySession with the I2CP- and streaminglib options as
 // specified. See the I2P documentation for a full list of options.
 func (sam *SAM) NewPrimarySession(id string, keys i2pkeys.I2PKeys, options []string) (*PrimarySession, error) {
-	conn, err := sam.newGenericSession("PRIMARY", id, keys, options, []string{})
+	conn, err := sam.newGenericSession(PrimarySessionSwitch, id, keys, options, []string{})
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +173,7 @@ func (sam *SAM) NewPrimarySession(id string, keys i2pkeys.I2PKeys, options []str
 // Creates a new PrimarySession with the I2CP- and PRIMARYinglib options as
 // specified. See the I2P documentation for a full list of options.
 func (sam *SAM) NewPrimarySessionWithSignature(id string, keys i2pkeys.I2PKeys, options []string, sigType string) (*PrimarySession, error) {
-	conn, err := sam.newGenericSessionWithSignature("PRIMARY", id, keys, sigType, options, []string{})
+	conn, err := sam.newGenericSessionWithSignature(PrimarySessionSwitch, id, keys, sigType, options, []string{})
 	if err != nil {
 		return nil, err
 	}
@@ -329,6 +327,10 @@ func (s *PrimarySession) NewDatagramSubSession(id string, udpPort int) (*Datagra
 		return nil, err
 	}
 	_, lport, err := net.SplitHostPort(udpconn.LocalAddr().String())
+	if err != nil {
+		s.Close()
+		return nil, err
+	}
 	conn, err := s.newGenericSubSession("DATAGRAM", id, []string{"PORT=" + lport})
 	if err != nil {
 		return nil, err
@@ -368,6 +370,10 @@ func (s *PrimarySession) NewRawSubSession(id string, udpPort int) (*RawSession, 
 		return nil, err
 	}
 	_, lport, err := net.SplitHostPort(udpconn.LocalAddr().String())
+	if err != nil {
+		s.Close()
+		return nil, err
+	}
 	//	conn, err := s.newGenericSubSession("RAW", id, s.keys, options, []string{"PORT=" + lport})
 	conn, err := s.newGenericSubSession("RAW", id, []string{"PORT=" + lport})
 	if err != nil {

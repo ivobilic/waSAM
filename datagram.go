@@ -56,6 +56,10 @@ func (s *SAM) NewDatagramSession(id string, keys i2pkeys.I2PKeys, options []stri
 		return nil, err
 	}
 	_, lport, err := net.SplitHostPort(udpconn.LocalAddr().String())
+	if err != nil {
+		s.Close()
+		return nil, err
+	}
 	conn, err := s.newGenericSession("DATAGRAM", id, keys, options, []string{"PORT=" + lport})
 	if err != nil {
 		return nil, err

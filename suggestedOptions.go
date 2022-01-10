@@ -1,5 +1,7 @@
 package sam3
 
+import "net/http"
+
 // Examples and suggestions for options when creating sessions.
 var (
 	// Suitable options if you are shuffling A LOT of traffic. If unused, this
@@ -51,3 +53,18 @@ var (
 		"inbound.backupQuantity=0", "outbound.backupQuantity=0",
 		"inbound.quantity=2", "outbound.quantity=2"}
 )
+
+func PrimarySessionString() string {
+	_, err := http.Get("http://127.0.0.1:7070")
+	if err != nil {
+		_, err := http.Get("http://127.0.0.1:7657")
+		if err != nil {
+			return "MASTER"
+		}
+		return "PRIMARY"
+	}
+	return "MASTER"
+
+}
+
+var PrimarySessionSwitch string = PrimarySessionString()

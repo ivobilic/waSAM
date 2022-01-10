@@ -3,6 +3,7 @@ package sam3
 import (
 	"fmt"
 	"log"
+	"strings"
 )
 
 type SAMEmit struct {
@@ -95,4 +96,14 @@ func NewEmit(opts ...func(*SAMEmit) error) (*SAMEmit, error) {
 		}
 	}
 	return &emit, nil
+}
+
+func IgnorePortError(err error) error {
+	if err == nil {
+		return nil
+	}
+	if strings.Contains(err.Error(), "missing port in address") {
+		err = nil
+	}
+	return err
 }

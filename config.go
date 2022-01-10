@@ -347,7 +347,7 @@ func (cfg *Config) DatagramSession() (session *DatagramSession, err error) {
 			// determine udp port
 			var portstr string
 			_, portstr, err = net.SplitHostPort(cfg.Addr)
-			if err == nil {
+			if IgnorePortError(err) == nil {
 				var port int
 				port, err = strconv.Atoi(portstr)
 				if err == nil && port > 0 {

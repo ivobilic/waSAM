@@ -1,5 +1,3 @@
-// +build nettest
-
 package sam3
 
 import (
@@ -99,7 +97,7 @@ func Test_PrimaryStreamingServerClient(t *testing.T) {
 	}
 	defer sam.Close()
 	fmt.Println("\tServer: Creating tunnel")
-	ss, err := sam.NewUniqueStreamSubSession("primaryExampleServerTun")
+	ss, err := sam.NewUniqueStreamSubSession("PrimaryServerClientTunnel")
 	if err != nil {
 		return
 	}
@@ -184,26 +182,13 @@ func ExamplePrimaryStreamSession() {
 		return
 	}
 
-	sam, err := earlysam.NewPrimarySession("PrimaryServerClientTunnel", keys, []string{"inbound.length=0", "outbound.length=0", "inbound.lengthVariance=0", "outbound.lengthVariance=0", "inbound.quantity=1", "outbound.quantity=1"})
+	sam, err := earlysam.NewPrimarySession("PrimaryStreamSessionTunnel", keys, []string{"inbound.length=0", "outbound.length=0", "inbound.lengthVariance=0", "outbound.lengthVariance=0", "inbound.quantity=1", "outbound.quantity=1"})
 	if err != nil {
 		log.Fatal(err.Error())
 		return
 	}
 	defer sam.Close()
-	// See the example Option_* variables.
-	ss, err := sam.NewStreamSubSession("stream_example")
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-	ss.Close()
-	someone, err := earlysam.Lookup("idk.i2p")
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-
-	conn, err := ss.DialI2P(someone)
+	conn, err := sam.Dial("tcp", "idk.i2p") //someone.Base32())
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -223,8 +208,6 @@ func ExamplePrimaryStreamSession() {
 		fmt.Println("Read HTTP/HTML from idk.i2p")
 		log.Println("Read HTTP/HTML from idk.i2p")
 	}
-	return
-
 	// Output:
 	//Sending HTTP GET /
 	//Read HTTP/HTML from idk.i2p
@@ -260,7 +243,7 @@ func ExamplePrimaryStreamListener() {
 
 	// Client connecting to the server
 	go func(server i2pkeys.I2PAddr) {
-		cs, err := sam.NewStreamSubSession("client_example")
+		cs, err := sam.NewUniqueStreamSubSession("PrimaryListenerTunnel")
 		if err != nil {
 			fmt.Println(err.Error())
 			quit <- false
@@ -284,7 +267,7 @@ func ExamplePrimaryStreamListener() {
 		quit <- true
 	}(keys.Addr()) // end of client
 
-	ss, err := sam.NewStreamSubSession("server_example")
+	ss, err := sam.NewUniqueStreamSubSession("PrimaryListenerTunnel")
 	if err != nil {
 		fmt.Println(err.Error())
 		return
