@@ -215,7 +215,7 @@ func (h I2PDestHash) Hash() string {
 }
 
 // Returns "I2P"
-func (h *I2PDestHash) Network() string {
+func (h I2PDestHash) Network() string {
 	return "I2P"
 }
 
