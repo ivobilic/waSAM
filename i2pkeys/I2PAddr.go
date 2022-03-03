@@ -184,6 +184,19 @@ func DestHashFromString(str string) (dhash I2PDestHash, err error) {
 	return
 }
 
+// create a desthash from a []byte array
+func DestHashFromBytes(str []byte) (dhash I2PDestHash, err error) {
+	if len(str) == 44 {
+		// valid
+		//_, err = i2pB32enc.Decode(dhash[:], []byte(str[:52]+"===="))
+		copy(dhash[:], str)
+	} else {
+		// invalid
+		err = errors.New("invalid desthash format")
+	}
+	return
+}
+
 // get string representation of i2p dest hash(base32 version)
 func (h I2PDestHash) String() string {
 	b32addr := make([]byte, 56)
