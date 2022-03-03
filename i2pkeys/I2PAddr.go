@@ -111,7 +111,9 @@ func (k I2PKeys) Private() []byte {
 	src := strings.Split(k.String(), k.Addr().String())[0]
 	var dest []byte
 	_, err := i2pB64enc.Decode(dest, []byte(src))
-	panic(err)
+	if err != nil {
+		panic(err)
+	}
 	return dest
 }
 
@@ -335,4 +337,10 @@ func NewDestination(samaddr string, sigType ...string) (I2PKeys, error) {
 		return I2PKeys{}, err
 	}
 	return keys, nil
+}
+
+type NetAddr interface {
+	String() string
+	Network() string
+	Port() int
 }
