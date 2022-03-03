@@ -186,7 +186,7 @@ func DestHashFromString(str string) (dhash I2PDestHash, err error) {
 
 // create a desthash from a []byte array
 func DestHashFromBytes(str []byte) (dhash *I2PDestHash, err error) {
-	if len(str) == 44 {
+	if len(str) == 32 {
 		// valid
 		//_, err = i2pB32enc.Decode(dhash[:], []byte(str[:52]+"===="))
 		copy(dhash[:], str)
