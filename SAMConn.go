@@ -9,7 +9,7 @@ import (
 
 /*
 import (
-	. "github.com/eyedeekay/sam3/i2pkeys"
+	. "github.com/eyedeekay/i2pkeys"
 )
 */
 // Implements net.Conn

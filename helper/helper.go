@@ -6,8 +6,8 @@ import (
 	"net"
 	"os"
 
+	"github.com/eyedeekay/i2pkeys"
 	"github.com/eyedeekay/sam3"
-	"github.com/eyedeekay/sam3/i2pkeys"
 )
 
 func NetListener(name, samaddr, keyspath string) (net.Listener, error) {

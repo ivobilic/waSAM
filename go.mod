@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	github.com/eyedeekay/goSam v0.32.31-0.20210122211817-f97683379f23
+	github.com/eyedeekay/i2pkeys v0.0.0-20220310052025-204d4ae6dcae // indirect
 	github.com/google/renameio v1.0.0 // indirect
 	github.com/riobard/go-x25519 v0.0.0-20190716001027-10cc4d8d0b33
 	github.com/rogpeppe/go-internal v1.6.2 // indirect

@@ -12,6 +12,8 @@ github.com/eyedeekay/goSam v0.32.31-0.20210122211024-dddd8ea916d6 h1:seMFdfTWvmA
 github.com/eyedeekay/goSam v0.32.31-0.20210122211024-dddd8ea916d6/go.mod h1:UgJnih/LpotwKriwVPOEa6yPDM2NDdVrKfLtS5DOLPE=
 github.com/eyedeekay/goSam v0.32.31-0.20210122211817-f97683379f23 h1:AHm/EzBilSQH+RFgEuslnlCpVQd88MQWx7KHW/VIQlc=
 github.com/eyedeekay/goSam v0.32.31-0.20210122211817-f97683379f23/go.mod h1:UgJnih/LpotwKriwVPOEa6yPDM2NDdVrKfLtS5DOLPE=
+github.com/eyedeekay/i2pkeys v0.0.0-20220310052025-204d4ae6dcae h1:SwegHeaf4pkDMB24UltIvJlj2+nd06QUZAbs8BDyfjM=
+github.com/eyedeekay/i2pkeys v0.0.0-20220310052025-204d4ae6dcae/go.mod h1:W9KCm9lqZ+Ozwl3dwcgnpPXAML97+I8Jiht7o5A8YBM=
 github.com/eyedeekay/sam3 v0.32.32/go.mod h1:qRA9KIIVxbrHlkj+ZB+OoxFGFgdKeGp1vSgPw26eOVU=
 github.com/getlantern/context v0.0.0-20190109183933-c447772a6520/go.mod h1:L+mq6/vvYHKjCX2oez0CgEAJmbq1fbb/oNJIWQkBybY=
 github.com/getlantern/errors v1.0.1/go.mod h1:l+xpFBrCtDLpK9qNjxs+cHU6+BAdlBaxHqikB6Lku3A=

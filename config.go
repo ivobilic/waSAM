@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/eyedeekay/sam3/i2pkeys"
+	"github.com/eyedeekay/i2pkeys"
 )
 
 // I2PConfig is a struct which manages I2P configuration options

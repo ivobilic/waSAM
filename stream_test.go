@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/eyedeekay/sam3/i2pkeys"
+	"github.com/eyedeekay/i2pkeys"
 )
 
 func Test_StreamingDial(t *testing.T) {

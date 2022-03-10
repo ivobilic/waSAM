@@ -11,11 +11,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/eyedeekay/sam3/i2pkeys"
+	"github.com/eyedeekay/i2pkeys"
 )
 
 import (
-	. "github.com/eyedeekay/sam3/i2pkeys"
+	. "github.com/eyedeekay/i2pkeys"
 )
 
 // Used for controlling I2Ps SAMv3.

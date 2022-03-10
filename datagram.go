@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/eyedeekay/sam3/i2pkeys"
+	"github.com/eyedeekay/i2pkeys"
 )
 
 // The DatagramSession implements net.PacketConn. It works almost like ordinary

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/eyedeekay/sam3/i2pkeys"
+	"github.com/eyedeekay/i2pkeys"
 )
 
 func Test_PrimaryStreamingDial(t *testing.T) {

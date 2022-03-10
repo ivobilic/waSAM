@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/eyedeekay/sam3/i2pkeys"
+	"github.com/eyedeekay/i2pkeys"
 )
 
 // The RawSession provides no authentication of senders, and there is no sender
