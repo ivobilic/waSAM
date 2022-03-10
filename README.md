@@ -10,6 +10,8 @@ before upgrading your sam3 dependencies. You can probably do this by running:
 find . -name '*.go' -exec sed -i 's|github.com/eyedeekay/sam3/i2pkeys|github.com/eyedeekay/i2pkeys|g' {} \;
 ```
 
+# README #
+
 go library for the I2P [SAMv3.0](https://geti2p.net/en/docs/api/samv3) bridge, used to build anonymous/pseudonymous end-to-end encrypted sockets.
 
 This library is much better than ccondom (that use BOB), much more stable and much easier to maintain.
