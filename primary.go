@@ -97,6 +97,7 @@ func (sam *PrimarySession) DialTCP(network string, laddr, raddr net.Addr) (net.C
 			return nil, err
 		}
 		sam.stsess[network+raddr.String()[0:4]] = ts
+		ts, _ = sam.stsess[network+raddr.String()[0:4]]
 	}
 	return ts.Dial(network, raddr.String())
 }
@@ -110,6 +111,7 @@ func (sam *PrimarySession) DialTCPI2P(network string, laddr, raddr string) (net.
 			return nil, err
 		}
 		sam.stsess[network+raddr[0:4]] = ts
+		ts, _ = sam.stsess[network+raddr[0:4]]
 	}
 	return ts.Dial(network, raddr)
 }
@@ -124,6 +126,7 @@ func (sam *PrimarySession) DialUDP(network string, laddr, raddr net.Addr) (net.P
 			return nil, err
 		}
 		sam.dgsess[network+raddr.String()[0:4]] = ds
+		ds, _ = sam.dgsess[network+raddr.String()[0:4]]
 	}
 	return ds.Dial(network, raddr.String())
 }
@@ -137,6 +140,7 @@ func (sam *PrimarySession) DialUDPI2P(network, laddr, raddr string) (*DatagramSe
 			return nil, err
 		}
 		sam.dgsess[network+raddr[0:4]] = ds
+		ds, _ = sam.dgsess[network+raddr[0:4]]
 	}
 	return ds.Dial(network, raddr)
 }
@@ -237,6 +241,7 @@ func (sam *PrimarySession) newGenericSubSessionWithSignatureAndPorts(style, id, 
 		return nil, err
 	}
 	text := string(buf[:n])
+	//log.Println("SAM:", text)
 	if strings.HasPrefix(text, session_ADDOK) {
 		//if sam.keys.String() != text[len(session_ADDOK):len(text)-1] {
 		//conn.Close()

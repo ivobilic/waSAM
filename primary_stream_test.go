@@ -108,17 +108,20 @@ func Test_PrimaryStreamingServerClient(t *testing.T) {
 		if !(<-w) {
 			return
 		}
-		/*sam2, err := NewSAM(yoursam)
-		if err != nil {
-			c <- false
-			return
-		}
-		defer sam2.Close()
-		keys, err := sam2.NewKeys()
-		if err != nil {
-			c <- false
-			return
-		}*/
+		/*
+		   sam2, err := NewSAM(yoursam)
+		   if err != nil {
+		   	c <- false
+		   	return
+		   }
+		   defer sam2.Close()
+		   keys, err := sam2.NewKeys()
+		   if err != nil {
+		   	c <- false
+		   	return
+		   }
+		*/
+
 		fmt.Println("\tClient: Creating tunnel")
 		ss2, err := sam.NewStreamSubSession("primaryExampleClientTun")
 		if err != nil {
@@ -239,7 +242,7 @@ func ExamplePrimaryStreamListener() {
 			return
 		}
 		defer sam.Close()
-		ss, err = sam.NewStreamSubSessionWithPorts("PrimaryListenerServerTunnel2", "3", "4")
+		ss, err = sam.NewStreamSubSession("PrimaryListenerServerTunnel2")
 		if err != nil {
 			fmt.Println(err.Error())
 			return
@@ -251,7 +254,7 @@ func ExamplePrimaryStreamListener() {
 			return
 		}
 		defer l.Close()
-		//fmt.Println("Serving on primary listener")
+		//fmt.Println("Serving on primary listener", l.Addr().String())
 		if err := http.Serve(l, &exitHandler{}); err != nil {
 			fmt.Println(err.Error())
 		}
@@ -279,6 +282,7 @@ func ExamplePrimaryStreamListener() {
 			Dial: sc.Dial,
 		},
 	}
+	//resp, err := client.Get("http://" + "idk.i2p") //ss.Addr().Base32())
 	resp, err := client.Get("http://" + ss.Addr().Base32())
 	if err != nil {
 		fmt.Println(err.Error())
@@ -293,7 +297,7 @@ func ExamplePrimaryStreamListener() {
 	fmt.Println("Got response: " + string(r))
 
 	// Output:
-	// Hello world!
+	// Got response: Hello world!
 }
 
 type exitHandler struct {
