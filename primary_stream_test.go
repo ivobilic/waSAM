@@ -2,12 +2,12 @@ package sam3
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"strings"
 	"testing"
 	"time"
-
-	"github.com/eyedeekay/i2pkeys"
 )
 
 func Test_PrimaryStreamingDial(t *testing.T) {
@@ -220,73 +220,85 @@ func ExamplePrimaryStreamListener() {
 
 	const samBridge = "127.0.0.1:7656"
 
-	earlysam, err := NewSAM(yoursam)
+	var ss *StreamSession
+	go func() {
+		earlysam, err := NewSAM(yoursam)
+		if err != nil {
+			log.Fatal(err.Error())
+			return
+		}
+		defer earlysam.Close()
+		keys, err := earlysam.NewKeys()
+		if err != nil {
+			log.Fatal(err.Error())
+			return
+		}
+		sam, err := earlysam.NewPrimarySession("PrimaryListenerTunnel", keys, []string{"inbound.length=0", "outbound.length=0", "inbound.lengthVariance=0", "outbound.lengthVariance=0", "inbound.quantity=1", "outbound.quantity=1"})
+		if err != nil {
+			log.Fatal(err.Error())
+			return
+		}
+		defer sam.Close()
+		ss, err = sam.NewStreamSubSessionWithPorts("PrimaryListenerServerTunnel2", "3", "4")
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		defer ss.Close()
+		l, err := ss.Listen()
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		defer l.Close()
+		//fmt.Println("Serving on primary listener")
+		if err := http.Serve(l, &exitHandler{}); err != nil {
+			fmt.Println(err.Error())
+		}
+	}()
+	time.Sleep(time.Second * 10)
+	latesam, err := NewSAM(yoursam)
 	if err != nil {
 		log.Fatal(err.Error())
 		return
 	}
-	defer earlysam.Close()
-	keys, err := earlysam.NewKeys()
+	defer latesam.Close()
+	keys2, err := latesam.NewKeys()
 	if err != nil {
 		log.Fatal(err.Error())
 		return
 	}
-
-	sam, err := earlysam.NewPrimarySession("PrimaryListenerTunnel", keys, []string{"inbound.length=0", "outbound.length=0", "inbound.lengthVariance=0", "outbound.lengthVariance=0", "inbound.quantity=1", "outbound.quantity=1"})
-	if err != nil {
-		log.Fatal(err.Error())
-		return
-	}
-	defer sam.Close()
-
-	quit := make(chan bool)
-
-	// Client connecting to the server
-	go func(server i2pkeys.I2PAddr) {
-		cs, err := sam.NewUniqueStreamSubSession("PrimaryListenerTunnel")
-		if err != nil {
-			fmt.Println(err.Error())
-			quit <- false
-			return
-		}
-		defer cs.Close()
-		conn, err := cs.DialI2P(server)
-		if err != nil {
-			fmt.Println(err.Error())
-			quit <- false
-			return
-		}
-		buf := make([]byte, 256)
-		n, err := conn.Read(buf)
-		if err != nil {
-			fmt.Println(err.Error())
-			quit <- false
-			return
-		}
-		fmt.Println(string(buf[:n]))
-		quit <- true
-	}(keys.Addr()) // end of client
-
-	ss, err := sam.NewUniqueStreamSubSession("PrimaryListenerTunnel")
+	sc, err := latesam.NewStreamSession("PrimaryListenerClientTunnel2", keys2, []string{"inbound.length=0", "outbound.length=0", "inbound.lengthVariance=0", "outbound.lengthVariance=0", "inbound.quantity=1", "outbound.quantity=1"})
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
-	defer ss.Close()
-	l, err := ss.Listen()
+	defer sc.Close()
+	client := http.Client{
+		Transport: &http.Transport{
+			Dial: sc.Dial,
+		},
+	}
+	resp, err := client.Get("http://" + ss.Addr().Base32())
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
-	conn, err := l.Accept()
+	defer resp.Body.Close()
+	r, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
-	conn.Write([]byte("Hello world!"))
-
-	<-quit // waits for client to die, for example only
+	fmt.Println("Got response: " + string(r))
 
 	// Output:
-	//Hello world!
+	// Hello world!
+}
+
+type exitHandler struct {
+}
+
+func (e *exitHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hello world!"))
 }

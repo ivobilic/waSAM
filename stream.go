@@ -108,7 +108,7 @@ func (s *StreamSession) Lookup(name string) (i2pkeys.I2PAddr, error) {
 	sam, err := NewSAM(s.samAddr)
 	if err == nil {
 		addr, err := sam.Lookup(name)
-		sam.Close()
+		defer sam.Close()
 		return addr, err
 	}
 	return i2pkeys.I2PAddr(""), err
@@ -177,15 +177,19 @@ func (s *StreamSession) Dial(n, addr string) (c net.Conn, err error) {
 
 	var i2paddr i2pkeys.I2PAddr
 	var host string
-	host, _, err = net.SplitHostPort(addr)
+	host, _, err = SplitHostPort(addr)
+	//log.Println("Dialing:", host)
 	if err = IgnorePortError(err); err == nil {
 		// check for name
 		if strings.HasSuffix(host, ".b32.i2p") || strings.HasSuffix(host, ".i2p") {
 			// name lookup
 			i2paddr, err = s.Lookup(host)
+			//log.Println("Lookup:", i2paddr, err)
 		} else {
 			// probably a destination
-			i2paddr = i2pkeys.I2PAddr(host)
+			i2paddr, err = i2pkeys.NewI2PAddrFromBytes([]byte(host))
+			//i2paddr = i2pkeys.I2PAddr(host)
+			//log.Println("Destination:", i2paddr, err)
 		}
 		if err == nil {
 			return s.DialI2P(i2paddr)
@@ -230,7 +234,7 @@ func (s *StreamSession) DialI2P(addr i2pkeys.I2PAddr) (*SAMConn, error) {
 			return nil, errors.New("I2P internal error")
 		case "RESULT=INVALID_KEY":
 			conn.Close()
-			return nil, errors.New("Invalid key")
+			return nil, errors.New("Invalid key - Stream Session")
 		case "RESULT=INVALID_ID":
 			conn.Close()
 			return nil, errors.New("Invalid tunnel ID")

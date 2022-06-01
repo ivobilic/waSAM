@@ -34,7 +34,7 @@ func (s *SAM) NewRawSession(id string, keys i2pkeys.I2PKeys, options []string, u
 	if udpPort == 0 {
 		udpPort = 7655
 	}
-	lhost, _, err := net.SplitHostPort(s.conn.LocalAddr().String())
+	lhost, _, err := SplitHostPort(s.conn.LocalAddr().String())
 	if err != nil {
 		s.Close()
 		return nil, err
@@ -47,7 +47,7 @@ func (s *SAM) NewRawSession(id string, keys i2pkeys.I2PKeys, options []string, u
 	if err != nil {
 		return nil, err
 	}
-	rhost, _, err := net.SplitHostPort(s.conn.RemoteAddr().String())
+	rhost, _, err := SplitHostPort(s.conn.RemoteAddr().String())
 	if err != nil {
 		s.Close()
 		return nil, err

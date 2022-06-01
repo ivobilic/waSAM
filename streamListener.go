@@ -86,7 +86,6 @@ func (l *StreamListener) AcceptI2P() (*SAMConn, error) {
 			if strings.HasPrefix(line, "STREAM STATUS RESULT=OK") {
 				// we gud read destination line
 				destline, err := rd.ReadString(10)
-				log.Println(destline)
 				if err == nil {
 					dest := ExtractDest(destline)
 					l.session.from = ExtractPairString(destline, "FROM_PORT")

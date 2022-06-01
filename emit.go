@@ -3,6 +3,7 @@ package sam3
 import (
 	"fmt"
 	"log"
+	"net"
 	"strings"
 )
 
@@ -106,4 +107,16 @@ func IgnorePortError(err error) error {
 		err = nil
 	}
 	return err
+}
+
+func SplitHostPort(hostport string) (string, string, error) {
+	host, port, err := net.SplitHostPort(hostport)
+	if err != nil {
+		if IgnorePortError(err) == nil {
+			log.Println("host: " + hostport)
+			host = hostport
+			port = "0"
+		}
+	}
+	return host, port, nil
 }

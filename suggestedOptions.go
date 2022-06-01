@@ -1,6 +1,10 @@
 package sam3
 
-import "net/http"
+import (
+	"net"
+	"net/http"
+	"os"
+)
 
 // Examples and suggestions for options when creating sessions.
 var (
@@ -64,7 +68,24 @@ func PrimarySessionString() string {
 		return "PRIMARY"
 	}
 	return "MASTER"
-
 }
 
 var PrimarySessionSwitch string = PrimarySessionString()
+
+func getEnv(key, fallback string) string {
+	value, ok := os.LookupEnv(key)
+	if !ok {
+		return fallback
+	}
+	return value
+}
+
+var SAM_HOST = getEnv("sam_host", "127.0.0.1")
+var SAM_PORT = getEnv("sam_port", "7656")
+
+func SAMDefaultAddr(fallforward string) string {
+	if fallforward == "" {
+		return net.JoinHostPort(SAM_HOST, SAM_PORT)
+	}
+	return fallforward
+}

@@ -77,9 +77,11 @@ func (ss *PrimarySession) Keys() i2pkeys.I2PKeys {
 
 func (sam *PrimarySession) Dial(network, addr string) (net.Conn, error) {
 	if network == "udp" || network == "udp4" || network == "udp6" {
+		//return sam.DialUDPI2P(network, network+addr[0:4], addr)
 		return sam.DialUDPI2P(network, network+addr[0:4], addr)
 	}
 	if network == "tcp" || network == "tcp4" || network == "tcp6" {
+		//return sam.DialTCPI2P(network, network+addr[0:4], addr)
 		return sam.DialTCPI2P(network, network+addr[0:4], addr)
 	}
 	return nil, fmt.Errorf("Error: Must specify a valid network type")
@@ -87,52 +89,56 @@ func (sam *PrimarySession) Dial(network, addr string) (net.Conn, error) {
 
 // DialTCP implements x/dialer
 func (sam *PrimarySession) DialTCP(network string, laddr, raddr net.Addr) (net.Conn, error) {
-	_, ok := sam.stsess[network+raddr.String()[0:4]]
+	ts, ok := sam.stsess[network+raddr.String()[0:4]]
+	var err error
 	if !ok {
-		stsess, err := sam.NewUniqueStreamSubSession(network + raddr.String()[0:4])
+		ts, err = sam.NewUniqueStreamSubSession(network + raddr.String()[0:4])
 		if err != nil {
 			return nil, err
 		}
-		sam.stsess[network+raddr.String()[0:4]] = stsess
+		sam.stsess[network+raddr.String()[0:4]] = ts
 	}
-	return sam.stsess[network+raddr.String()[0:4]].Dial(network, raddr.String())
+	return ts.Dial(network, raddr.String())
 }
 
 func (sam *PrimarySession) DialTCPI2P(network string, laddr, raddr string) (net.Conn, error) {
-	_, ok := sam.stsess[network+raddr[0:4]]
+	ts, ok := sam.stsess[network+raddr[0:4]]
+	var err error
 	if !ok {
-		stsess, err := sam.NewUniqueStreamSubSession(network + laddr)
+		ts, err = sam.NewUniqueStreamSubSession(network + laddr)
 		if err != nil {
 			return nil, err
 		}
-		sam.stsess[network+raddr[0:4]] = stsess
+		sam.stsess[network+raddr[0:4]] = ts
 	}
-	return sam.stsess[network+raddr[0:4]].Dial(network, raddr)
+	return ts.Dial(network, raddr)
 }
 
 // DialUDP implements x/dialer
 func (sam *PrimarySession) DialUDP(network string, laddr, raddr net.Addr) (net.PacketConn, error) {
-	_, ok := sam.dgsess[network+raddr.String()[0:4]]
+	ds, ok := sam.dgsess[network+raddr.String()[0:4]]
+	var err error
 	if !ok {
-		dgsess, err := sam.NewDatagramSubSession(network+raddr.String()[0:4], 0)
+		ds, err = sam.NewDatagramSubSession(network+raddr.String()[0:4], 0)
 		if err != nil {
 			return nil, err
 		}
-		sam.dgsess[network+raddr.String()[0:4]] = dgsess
+		sam.dgsess[network+raddr.String()[0:4]] = ds
 	}
-	return sam.dgsess[network+raddr.String()[0:4]].Dial(network, raddr.String())
+	return ds.Dial(network, raddr.String())
 }
 
 func (sam *PrimarySession) DialUDPI2P(network, laddr, raddr string) (*DatagramSession, error) {
-	_, ok := sam.dgsess[network+raddr[0:4]]
+	ds, ok := sam.dgsess[network+raddr[0:4]]
+	var err error
 	if !ok {
-		dgsess, err := sam.NewDatagramSubSession(network+laddr, 0)
+		ds, err = sam.NewDatagramSubSession(network+laddr, 0)
 		if err != nil {
 			return nil, err
 		}
-		sam.dgsess[network+raddr[0:4]] = dgsess
+		sam.dgsess[network+raddr[0:4]] = ds
 	}
-	return sam.dgsess[network+raddr[0:4]].Dial(network, raddr)
+	return ds.Dial(network, raddr)
 }
 
 func (s *PrimarySession) Lookup(name string) (a net.Addr, err error) {
@@ -205,13 +211,13 @@ func (sam *PrimarySession) newGenericSubSessionWithSignatureAndPorts(style, id, 
 	conn := sam.conn
 	fp := ""
 	tp := ""
-	if from != "0" {
+	if from != "0" && from != "" {
 		fp = " FROM_PORT=" + from
 	}
-	if to != "0" {
+	if to != "0" && to != "" {
 		tp = " TO_PORT=" + to
 	}
-	scmsg := []byte("SESSION ADD STYLE=" + style + fp + tp + " ID=" + id + " " + strings.Join(extras, " ") + "\n")
+	scmsg := []byte("SESSION ADD STYLE=" + style + " ID=" + id + fp + tp + " " + strings.Join(extras, " ") + "\n")
 	for m, i := 0, 0; m != len(scmsg); i++ {
 		if i == 15 {
 			conn.Close()
@@ -245,7 +251,7 @@ func (sam *PrimarySession) newGenericSubSessionWithSignatureAndPorts(style, id, 
 		return nil, errors.New("Duplicate destination")
 	} else if text == session_INVALID_KEY {
 		conn.Close()
-		return nil, errors.New("Invalid key")
+		return nil, errors.New("Invalid key - Primary Session")
 	} else if strings.HasPrefix(text, session_I2P_ERROR) {
 		conn.Close()
 		return nil, errors.New("I2P error " + text[len(session_I2P_ERROR):])
@@ -272,7 +278,7 @@ func (sam *PrimarySession) NewUniqueStreamSubSession(id string) (*StreamSession,
 	if err != nil {
 		return nil, err
 	}
-	return &StreamSession{sam.Config.I2PConfig.Sam(), id, conn, sam.keys, time.Duration(600 * time.Second), time.Now(), Sig_NONE, randport(), "0"}, nil
+	return &StreamSession{sam.Config.I2PConfig.Sam(), id, conn, sam.keys, time.Duration(600 * time.Second), time.Now(), Sig_NONE, randport(), randport()}, nil
 }
 
 // Creates a new StreamSession with the I2CP- and streaminglib options as
@@ -304,7 +310,7 @@ func (s *PrimarySession) NewDatagramSubSession(id string, udpPort int) (*Datagra
 	if udpPort == 0 {
 		udpPort = 7655
 	}
-	lhost, _, err := net.SplitHostPort(s.conn.LocalAddr().String())
+	lhost, _, err := SplitHostPort(s.conn.LocalAddr().String())
 	if err != nil {
 		s.Close()
 		return nil, err
@@ -317,7 +323,7 @@ func (s *PrimarySession) NewDatagramSubSession(id string, udpPort int) (*Datagra
 	if err != nil {
 		return nil, err
 	}
-	rhost, _, err := net.SplitHostPort(s.conn.RemoteAddr().String())
+	rhost, _, err := SplitHostPort(s.conn.RemoteAddr().String())
 	if err != nil {
 		s.Close()
 		return nil, err
@@ -347,7 +353,7 @@ func (s *PrimarySession) NewRawSubSession(id string, udpPort int) (*RawSession, 
 	if udpPort == 0 {
 		udpPort = 7655
 	}
-	lhost, _, err := net.SplitHostPort(s.conn.LocalAddr().String())
+	lhost, _, err := SplitHostPort(s.conn.LocalAddr().String())
 	if err != nil {
 		s.Close()
 		return nil, err
@@ -360,7 +366,7 @@ func (s *PrimarySession) NewRawSubSession(id string, udpPort int) (*RawSession, 
 	if err != nil {
 		return nil, err
 	}
-	rhost, _, err := net.SplitHostPort(s.conn.RemoteAddr().String())
+	rhost, _, err := SplitHostPort(s.conn.RemoteAddr().String())
 	if err != nil {
 		s.Close()
 		return nil, err
