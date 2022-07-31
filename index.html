@@ -1,0 +1,291 @@
+<html>
+  <head>
+    <title>
+      README
+    </title>
+    <meta name="author" content="kpetku" />
+    <meta name="description" content="sam3.git" />
+    <meta name="keywords" content="master" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script type="text/javascript" src=""></script>
+  </head>
+  <body>
+    <div id="navbar">
+      <a href="#shownav">
+        Show navigation
+      </a>
+      <div id="shownav">
+        <div id="hidenav">
+          <ul>
+            <li>
+              <a href="index.html">
+                index
+              </a>
+            </li>
+          </ul>
+          <br>
+          <a href="#hidenav">
+            Hide Navigation
+          </a>
+        </div>
+      </div>
+    </div>
+    <h1>
+      <a href="/">
+        README
+      </a>
+    </h1>
+    <h2>
+      !!IMPORTANT!!
+    </h2>
+    <p>
+      In the next version, I’ll be moving the
+      <code>
+        i2pkeys
+      </code>
+      directory to it’s own repository
+      so I can avoid import cycle headaches. Please migrate to the new
+      <code>
+        i2pkeys
+      </code>
+      repository
+      before upgrading your sam3 dependencies. You can probably do this by running:
+    </p>
+    <pre><code>find . -name &#39;*.go&#39; -exec sed -i &#39;s|github.com/eyedeekay/sam3/i2pkeys|github.com/eyedeekay/i2pkeys|g&#39; {} \;
+</code></pre>
+    <h1>
+      README
+    </h1>
+    <p>
+      go library for the I2P
+      <a href="https://geti2p.net/en/docs/api/samv3" rel="nofollow">
+        SAMv3.0
+      </a>
+      bridge, used to build anonymous/pseudonymous end-to-end encrypted sockets.
+    </p>
+    <p>
+      This library is much better than ccondom (that use BOB), much more stable and much easier to maintain.
+    </p>
+    <h2>
+      Support/TODO
+    </h2>
+    <p>
+      <strong>
+        What works:
+      </strong>
+    </p>
+    <ul>
+      <li>
+        Utils
+        <ul>
+          <li>
+            Resolving domain names to I2P destinations
+          </li>
+          <li>
+            .b32.i2p hashes
+          </li>
+          <li>
+            Generating keys/i2p destinations
+          </li>
+        </ul>
+      </li>
+      <li>
+        Streaming
+        <ul>
+          <li>
+            DialI2P() - Connecting to stuff in I2P
+          </li>
+          <li>
+            Listen()/Accept() - Handling incomming connections
+          </li>
+          <li>
+            Implements net.Conn and net.Listener
+          </li>
+        </ul>
+      </li>
+      <li>
+        Datagrams
+        <ul>
+          <li>
+            Implements net.PacketConn
+          </li>
+        </ul>
+      </li>
+      <li>
+        Raw datagrams
+        <ul>
+          <li>
+            Like datagrams, but without addresses
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <p>
+      <strong>
+        Does not work:
+      </strong>
+    </p>
+    <ul>
+      <li>
+        Stream Forwarding
+      </li>
+      <li>
+        Probably needs some real-world testing
+      </li>
+    </ul>
+    <h2>
+      Documentation
+    </h2>
+    <ul>
+      <li>
+        Latest version-documentation:
+        <ul>
+          <li>
+            set your GOPATH
+          </li>
+          <li>
+            Enter
+            <code>
+              godoc -http=:8081
+            </code>
+            into your terminal and hit enter.
+          </li>
+          <li>
+            Goto
+            <a href="http://localhost:8081" rel="nofollow">
+              http://localhost:8081
+            </a>
+            , click packages, and navigate to sam3
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <h2>
+      Examples
+    </h2>
+    <pre><code>package main
+
+import (
+	&#34;github.com/eyedeekay/sam3&#34;
+	&#34;github.com/eyedeekay/sam3/i2pkeys&#34;
+	&#34;fmt&#34;
+)
+
+const yoursam = &#34;127.0.0.1:7656&#34; // sam bridge
+
+func client(server i2pkeys.I2PAddr) {
+	sam, _ := sam3.NewSAM(yoursam)
+	keys, _ := sam.NewKeys()
+	stream, _ := sam.NewStreamSession(&#34;clientTun&#34;, keys, sam3.Options_Small)
+	fmt.Println(&#34;Client: Connecting to &#34; + server.Base32())
+	conn, _ := stream.DialI2P(server)
+	conn.Write([]byte(&#34;Hello world!&#34;))
+	return
+}
+
+func main() {
+	sam, _ := NewSAM(yoursam)
+	keys, _ := sam.NewKeys()
+	stream, _ := sam.NewStreamSession(&#34;serverTun&#34;, keys, sam3.Options_Medium)
+	listener, _ := stream.Listen()
+	go client(keys.Addr())
+	conn, _ := listener.Accept()
+	buf := make([]byte, 4096)
+	n, _ := conn.Read(buf)
+	fmt.Println(&#34;Server received: &#34; + string(buf[:n]))
+}
+</code></pre>
+    <p>
+      The above will write to the terminal:
+    </p>
+    <pre><code>Client: Connecting to zjnvfh4hs3et5vtz35ogwzrws26zvwkcad5uo5esecvg4qpk5b4a.b32.i2p
+Server received: Hello world!
+</code></pre>
+    <p>
+      Error handling was omitted in the above code for readability.
+    </p>
+    <h2>
+      Testing
+    </h2>
+    <ul>
+      <li>
+        <code>
+          go test -tags=nettest
+        </code>
+        runs the whole suite (takes 90+ sec to perform!)
+      </li>
+      <li>
+        <code>
+          go test -short
+        </code>
+        runs the shorter variant, does not connect to anything
+      </li>
+    </ul>
+    <h2>
+      License
+    </h2>
+    <p>
+      Public domain.
+    </p>
+    <h2>
+      Author
+    </h2>
+    <ul>
+      <li>
+        Kalle Vedin
+        <code>
+          kalle.vedin@fripost.org
+        </code>
+      </li>
+      <li>
+        Unknown Name (majestrate)
+      </li>
+      <li>
+        idk
+      </li>
+      <li>
+        qiwenmin
+      </li>
+    </ul>
+    <div>
+      <a href="#show">
+        Show license
+      </a>
+      <div id="show">
+        <div id="hide">
+          <pre><code>This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
+
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+For more information, please refer to <http://unlicense.org/>
+</code></pre>
+          <a href="#hide">
+            Hide license
+          </a>
+        </div>
+      </div>
+    </div>
+    <div>
+      <iframe src="https://snowflake.torproject.org/embed.html" width="320" height="240" frameborder="0" scrolling="no"></iframe>
+    </div>
+  </body>
+</html>
