@@ -55,7 +55,7 @@ func (sam *SAMResolver) Resolve(name string) (i2pkeys.I2PAddr, error) {
 		if text == "RESULT=OK" {
 			continue
 		} else if text == "RESULT=INVALID_KEY" {
-			errStr += "Invalid key."
+			errStr += "Invalid key - resolver."
 		} else if text == "RESULT=KEY_NOT_FOUND" {
 			errStr += "Unable to resolve " + name
 		} else if text == "NAME="+name {

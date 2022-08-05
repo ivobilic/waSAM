@@ -12,9 +12,7 @@ import (
 	"strings"
 
 	"github.com/eyedeekay/i2pkeys"
-)
 
-import (
 	. "github.com/eyedeekay/i2pkeys"
 )
 
@@ -259,7 +257,7 @@ func (sam *SAM) newGenericSessionWithSignatureAndPorts(style, id, from, to strin
 		return nil, errors.New("Duplicate destination")
 	} else if text == session_INVALID_KEY {
 		conn.Close()
-		return nil, errors.New("Invalid key")
+		return nil, errors.New("Invalid key - SAM session")
 	} else if strings.HasPrefix(text, session_I2P_ERROR) {
 		conn.Close()
 		return nil, errors.New("I2P error " + text[len(session_I2P_ERROR):])
