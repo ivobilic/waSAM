@@ -65,6 +65,22 @@ func PrimarySessionString() string {
 		if err != nil {
 			return "MASTER"
 		}
+		// at this point we're probably running on Java I2P and thus probably
+		// have a PRIMARY session. Just to be sure, try to make one, check
+		// for errors, then immediately close it.
+		testSam, err := NewSAM(SAMDefaultAddr(""))
+		if err != nil {
+			return "MASTER"
+		}
+		newKeys, err := testSam.NewKeys()
+		if err != nil {
+			return "MASTER"
+		}
+		primarySession, err := testSam.newPrimarySession("PRIMARY", "primaryTestTunnel", newKeys, Options_Small)
+		if err != nil {
+			return "MASTER"
+		}
+		primarySession.Close()
 		return "PRIMARY"
 	}
 	return "MASTER"

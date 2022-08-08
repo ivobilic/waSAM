@@ -171,7 +171,11 @@ func (sam *PrimarySession) ResolveUDPAddr(network, dest string) (net.Addr, error
 // Creates a new PrimarySession with the I2CP- and streaminglib options as
 // specified. See the I2P documentation for a full list of options.
 func (sam *SAM) NewPrimarySession(id string, keys i2pkeys.I2PKeys, options []string) (*PrimarySession, error) {
-	conn, err := sam.newGenericSession(PrimarySessionSwitch, id, keys, options, []string{})
+	return sam.newPrimarySession(PrimarySessionSwitch, id, keys, options)
+}
+
+func (sam *SAM) newPrimarySession(primarySessionSwitch string, id string, keys i2pkeys.I2PKeys, options []string) (*PrimarySession, error) {
+	conn, err := sam.newGenericSession(primarySessionSwitch, id, keys, options, []string{})
 	if err != nil {
 		return nil, err
 	}
