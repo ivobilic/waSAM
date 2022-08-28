@@ -7,6 +7,7 @@
     <meta name="description" content="sam3" />
     <meta name="keywords" content="master" />
     <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="stylesheet" type="text/css" href="showhider.css" />
   </head>
   <body>
     <div id="navbar">
@@ -30,19 +31,23 @@
       </div>
     </div>
     <h1>
-      <a href="/">
-        README
+      <a href="#readme" rel="nofollow">
+        <span></span>
       </a>
+      README
     </h1>
     <h2>
+      <a href="#important" rel="nofollow">
+        <span></span>
+      </a>
       !!IMPORTANT!!
     </h2>
     <p>
-      In the next version, I’ll be moving the
+      In the next version, I&#39;ll be moving the
       <code>
         i2pkeys
       </code>
-      directory to it’s own repository
+      directory to it&#39;s own repository
       so I can avoid import cycle headaches. Please migrate to the new
       <code>
         i2pkeys
@@ -50,9 +55,14 @@
       repository
       before upgrading your sam3 dependencies. You can probably do this by running:
     </p>
-    <pre><code>find . -name &#39;*.go&#39; -exec sed -i &#39;s|github.com/eyedeekay/sam3/i2pkeys|github.com/eyedeekay/i2pkeys|g&#39; {} \;
-</code></pre>
+    <div>
+      <pre>find . -name &#39;*.go&#39; -exec sed -i &#39;s|github.com/eyedeekay/sam3/i2pkeys|github.com/eyedeekay/i2pkeys|g&#39; {} \;
+</pre>
+    </div>
     <h1>
+      <a href="#readme" rel="nofollow">
+        <span></span>
+      </a>
       README
     </h1>
     <p>
@@ -66,6 +76,9 @@
       This library is much better than ccondom (that use BOB), much more stable and much easier to maintain.
     </p>
     <h2>
+      <a href="#support-todo" rel="nofollow">
+        <span></span>
+      </a>
       Support/TODO
     </h2>
     <p>
@@ -133,6 +146,9 @@
       </li>
     </ul>
     <h2>
+      <a href="#documentation" rel="nofollow">
+        <span></span>
+      </a>
       Documentation
     </h2>
     <ul>
@@ -160,9 +176,13 @@
       </li>
     </ul>
     <h2>
+      <a href="#examples" rel="nofollow">
+        <span></span>
+      </a>
       Examples
     </h2>
-    <pre><code>package main
+    <div>
+      <pre>package main
 
 import (
 	&#34;github.com/eyedeekay/sam3&#34;
@@ -193,17 +213,23 @@ func main() {
 	n, _ := conn.Read(buf)
 	fmt.Println(&#34;Server received: &#34; + string(buf[:n]))
 }
-</code></pre>
+</pre>
+    </div>
     <p>
       The above will write to the terminal:
     </p>
-    <pre><code>Client: Connecting to zjnvfh4hs3et5vtz35ogwzrws26zvwkcad5uo5esecvg4qpk5b4a.b32.i2p
+    <div>
+      <pre>Client: Connecting to zjnvfh4hs3et5vtz35ogwzrws26zvwkcad5uo5esecvg4qpk5b4a.b32.i2p
 Server received: Hello world!
-</code></pre>
+</pre>
+    </div>
     <p>
       Error handling was omitted in the above code for readability.
     </p>
     <h2>
+      <a href="#testing" rel="nofollow">
+        <span></span>
+      </a>
       Testing
     </h2>
     <ul>
@@ -221,12 +247,18 @@ Server received: Hello world!
       </li>
     </ul>
     <h2>
+      <a href="#license" rel="nofollow">
+        <span></span>
+      </a>
       License
     </h2>
     <p>
       Public domain.
     </p>
     <h2>
+      <a href="#author" rel="nofollow">
+        <span></span>
+      </a>
       Author
     </h2>
     <ul>
