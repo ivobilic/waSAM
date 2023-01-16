@@ -35,7 +35,7 @@ const (
 )
 
 const (
-	Sig_NONE                 = ""
+	Sig_NONE                 = "SIGNATURE_TYPE=EdDSA_SHA512_Ed25519"
 	Sig_DSA_SHA1             = "SIGNATURE_TYPE=DSA_SHA1"
 	Sig_ECDSA_SHA256_P256    = "SIGNATURE_TYPE=ECDSA_SHA256_P256"
 	Sig_ECDSA_SHA384_P384    = "SIGNATURE_TYPE=ECDSA_SHA384_P384"
