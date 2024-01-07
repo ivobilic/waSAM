@@ -6,10 +6,10 @@ import (
 	"strings"
 )
 
-//Option is a SAMEmit Option
+// Option is a SAMEmit Option
 type Option func(*SAMEmit) error
 
-//SetType sets the type of the forwarder server
+// SetType sets the type of the forwarder server
 func SetType(s string) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if s == "STREAM" {
@@ -41,7 +41,7 @@ func SetSAMAddress(s string) func(*SAMEmit) error {
 	}
 }
 
-//SetSAMHost sets the host of the SAMEmit's SAM bridge
+// SetSAMHost sets the host of the SAMEmit's SAM bridge
 func SetSAMHost(s string) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		c.I2PConfig.SamHost = s
@@ -49,7 +49,7 @@ func SetSAMHost(s string) func(*SAMEmit) error {
 	}
 }
 
-//SetSAMPort sets the port of the SAMEmit's SAM bridge using a string
+// SetSAMPort sets the port of the SAMEmit's SAM bridge using a string
 func SetSAMPort(s string) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		port, err := strconv.Atoi(s)
@@ -64,7 +64,7 @@ func SetSAMPort(s string) func(*SAMEmit) error {
 	}
 }
 
-//SetName sets the host of the SAMEmit's SAM bridge
+// SetName sets the host of the SAMEmit's SAM bridge
 func SetName(s string) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		c.I2PConfig.TunName = s
@@ -72,7 +72,7 @@ func SetName(s string) func(*SAMEmit) error {
 	}
 }
 
-//SetInLength sets the number of hops inbound
+// SetInLength sets the number of hops inbound
 func SetInLength(u int) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if u < 7 && u >= 0 {
@@ -83,7 +83,7 @@ func SetInLength(u int) func(*SAMEmit) error {
 	}
 }
 
-//SetOutLength sets the number of hops outbound
+// SetOutLength sets the number of hops outbound
 func SetOutLength(u int) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if u < 7 && u >= 0 {
@@ -94,7 +94,7 @@ func SetOutLength(u int) func(*SAMEmit) error {
 	}
 }
 
-//SetInVariance sets the variance of a number of hops inbound
+// SetInVariance sets the variance of a number of hops inbound
 func SetInVariance(i int) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if i < 7 && i > -7 {
@@ -105,7 +105,7 @@ func SetInVariance(i int) func(*SAMEmit) error {
 	}
 }
 
-//SetOutVariance sets the variance of a number of hops outbound
+// SetOutVariance sets the variance of a number of hops outbound
 func SetOutVariance(i int) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if i < 7 && i > -7 {
@@ -116,7 +116,7 @@ func SetOutVariance(i int) func(*SAMEmit) error {
 	}
 }
 
-//SetInQuantity sets the inbound tunnel quantity
+// SetInQuantity sets the inbound tunnel quantity
 func SetInQuantity(u int) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if u <= 16 && u > 0 {
@@ -127,7 +127,7 @@ func SetInQuantity(u int) func(*SAMEmit) error {
 	}
 }
 
-//SetOutQuantity sets the outbound tunnel quantity
+// SetOutQuantity sets the outbound tunnel quantity
 func SetOutQuantity(u int) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if u <= 16 && u > 0 {
@@ -138,7 +138,7 @@ func SetOutQuantity(u int) func(*SAMEmit) error {
 	}
 }
 
-//SetInBackups sets the inbound tunnel backups
+// SetInBackups sets the inbound tunnel backups
 func SetInBackups(u int) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if u < 6 && u >= 0 {
@@ -149,7 +149,7 @@ func SetInBackups(u int) func(*SAMEmit) error {
 	}
 }
 
-//SetOutBackups sets the inbound tunnel backups
+// SetOutBackups sets the inbound tunnel backups
 func SetOutBackups(u int) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if u < 6 && u >= 0 {
@@ -160,7 +160,7 @@ func SetOutBackups(u int) func(*SAMEmit) error {
 	}
 }
 
-//SetEncrypt tells the router to use an encrypted leaseset
+// SetEncrypt tells the router to use an encrypted leaseset
 func SetEncrypt(b bool) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if b {
@@ -172,7 +172,7 @@ func SetEncrypt(b bool) func(*SAMEmit) error {
 	}
 }
 
-//SetLeaseSetKey sets the host of the SAMEmit's SAM bridge
+// SetLeaseSetKey sets the host of the SAMEmit's SAM bridge
 func SetLeaseSetKey(s string) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		c.I2PConfig.LeaseSetKey = s
@@ -180,7 +180,7 @@ func SetLeaseSetKey(s string) func(*SAMEmit) error {
 	}
 }
 
-//SetLeaseSetPrivateKey sets the host of the SAMEmit's SAM bridge
+// SetLeaseSetPrivateKey sets the host of the SAMEmit's SAM bridge
 func SetLeaseSetPrivateKey(s string) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		c.I2PConfig.LeaseSetPrivateKey = s
@@ -188,7 +188,7 @@ func SetLeaseSetPrivateKey(s string) func(*SAMEmit) error {
 	}
 }
 
-//SetLeaseSetPrivateSigningKey sets the host of the SAMEmit's SAM bridge
+// SetLeaseSetPrivateSigningKey sets the host of the SAMEmit's SAM bridge
 func SetLeaseSetPrivateSigningKey(s string) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		c.I2PConfig.LeaseSetPrivateSigningKey = s
@@ -196,7 +196,7 @@ func SetLeaseSetPrivateSigningKey(s string) func(*SAMEmit) error {
 	}
 }
 
-//SetMessageReliability sets the host of the SAMEmit's SAM bridge
+// SetMessageReliability sets the host of the SAMEmit's SAM bridge
 func SetMessageReliability(s string) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		c.I2PConfig.MessageReliability = s
@@ -204,7 +204,7 @@ func SetMessageReliability(s string) func(*SAMEmit) error {
 	}
 }
 
-//SetAllowZeroIn tells the tunnel to accept zero-hop peers
+// SetAllowZeroIn tells the tunnel to accept zero-hop peers
 func SetAllowZeroIn(b bool) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if b {
@@ -216,7 +216,7 @@ func SetAllowZeroIn(b bool) func(*SAMEmit) error {
 	}
 }
 
-//SetAllowZeroOut tells the tunnel to accept zero-hop peers
+// SetAllowZeroOut tells the tunnel to accept zero-hop peers
 func SetAllowZeroOut(b bool) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if b {
@@ -228,7 +228,7 @@ func SetAllowZeroOut(b bool) func(*SAMEmit) error {
 	}
 }
 
-//SetCompress tells clients to use compression
+// SetCompress tells clients to use compression
 func SetCompress(b bool) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if b {
@@ -240,7 +240,7 @@ func SetCompress(b bool) func(*SAMEmit) error {
 	}
 }
 
-//SetFastRecieve tells clients to use compression
+// SetFastRecieve tells clients to use compression
 func SetFastRecieve(b bool) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if b {
@@ -252,7 +252,7 @@ func SetFastRecieve(b bool) func(*SAMEmit) error {
 	}
 }
 
-//SetReduceIdle tells the connection to reduce it's tunnels during extended idle time.
+// SetReduceIdle tells the connection to reduce it's tunnels during extended idle time.
 func SetReduceIdle(b bool) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if b {
@@ -264,7 +264,7 @@ func SetReduceIdle(b bool) func(*SAMEmit) error {
 	}
 }
 
-//SetReduceIdleTime sets the time to wait before reducing tunnels to idle levels
+// SetReduceIdleTime sets the time to wait before reducing tunnels to idle levels
 func SetReduceIdleTime(u int) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		c.I2PConfig.ReduceIdleTime = "300000"
@@ -276,7 +276,7 @@ func SetReduceIdleTime(u int) func(*SAMEmit) error {
 	}
 }
 
-//SetReduceIdleTimeMs sets the time to wait before reducing tunnels to idle levels in milliseconds
+// SetReduceIdleTimeMs sets the time to wait before reducing tunnels to idle levels in milliseconds
 func SetReduceIdleTimeMs(u int) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		c.I2PConfig.ReduceIdleTime = "300000"
@@ -288,7 +288,7 @@ func SetReduceIdleTimeMs(u int) func(*SAMEmit) error {
 	}
 }
 
-//SetReduceIdleQuantity sets minimum number of tunnels to reduce to during idle time
+// SetReduceIdleQuantity sets minimum number of tunnels to reduce to during idle time
 func SetReduceIdleQuantity(u int) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if u < 5 {
@@ -299,7 +299,7 @@ func SetReduceIdleQuantity(u int) func(*SAMEmit) error {
 	}
 }
 
-//SetCloseIdle tells the connection to close it's tunnels during extended idle time.
+// SetCloseIdle tells the connection to close it's tunnels during extended idle time.
 func SetCloseIdle(b bool) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if b {
@@ -311,7 +311,7 @@ func SetCloseIdle(b bool) func(*SAMEmit) error {
 	}
 }
 
-//SetCloseIdleTime sets the time to wait before closing tunnels to idle levels
+// SetCloseIdleTime sets the time to wait before closing tunnels to idle levels
 func SetCloseIdleTime(u int) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		c.I2PConfig.CloseIdleTime = "300000"
@@ -323,7 +323,7 @@ func SetCloseIdleTime(u int) func(*SAMEmit) error {
 	}
 }
 
-//SetCloseIdleTimeMs sets the time to wait before closing tunnels to idle levels in milliseconds
+// SetCloseIdleTimeMs sets the time to wait before closing tunnels to idle levels in milliseconds
 func SetCloseIdleTimeMs(u int) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		c.I2PConfig.CloseIdleTime = "300000"
@@ -335,7 +335,7 @@ func SetCloseIdleTimeMs(u int) func(*SAMEmit) error {
 	}
 }
 
-//SetAccessListType tells the system to treat the AccessList as a whitelist
+// SetAccessListType tells the system to treat the AccessList as a whitelist
 func SetAccessListType(s string) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if s == "whitelist" {
@@ -355,7 +355,7 @@ func SetAccessListType(s string) func(*SAMEmit) error {
 	}
 }
 
-//SetAccessList tells the system to treat the AccessList as a whitelist
+// SetAccessList tells the system to treat the AccessList as a whitelist
 func SetAccessList(s []string) func(*SAMEmit) error {
 	return func(c *SAMEmit) error {
 		if len(s) > 0 {

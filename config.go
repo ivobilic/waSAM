@@ -51,6 +51,8 @@ type I2PConfig struct {
 	ReduceIdle                string
 	ReduceIdleTime            string
 	ReduceIdleQuantity        string
+	LeaseSetEncryption        string
+
 	//Streaming Library options
 	AccessListType string
 	AccessList     []string
@@ -234,6 +236,7 @@ func (f *I2PConfig) Print() []string {
 		lsk, lspk, lspsk,
 		f.Accesslisttype(),
 		f.Accesslist(),
+		f.LeaseSetEncryptionType(),
 	}
 }
 
@@ -257,6 +260,18 @@ func (f *I2PConfig) Accesslist() string {
 		return "i2cp.accessList=" + strings.TrimSuffix(r, ",")
 	}
 	return ""
+}
+
+func (f *I2PConfig) LeaseSetEncryptionType() string {
+	if f.LeaseSetEncryption == "" {
+		return "i2cp.leaseSetEncType=4,0"
+	}
+	for _, s := range strings.Split(f.LeaseSetEncryption, ",") {
+		if _, err := strconv.Atoi(s); err != nil {
+			panic("Invalid encrypted leaseSet type: " + s)
+		}
+	}
+	return "i2cp.leaseSetEncType=" + f.LeaseSetEncryption
 }
 
 func NewConfig(opts ...func(*I2PConfig) error) (*I2PConfig, error) {

@@ -12,10 +12,7 @@ type SAMEmit struct {
 }
 
 func (e *SAMEmit) OptStr() string {
-	optStr := ""
-	for _, opt := range e.I2PConfig.Print() {
-		optStr += opt + " "
-	}
+	optStr := strings.Join(e.I2PConfig.Print(), " ")
 	return optStr
 }
 

@@ -4,6 +4,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 )
 
 // Examples and suggestions for options when creating sessions.
@@ -104,4 +105,12 @@ func SAMDefaultAddr(fallforward string) string {
 		return net.JoinHostPort(SAM_HOST, SAM_PORT)
 	}
 	return fallforward
+}
+
+func GenerateOptionString(opts []string) string {
+	optStr := strings.Join(opts, " ")
+	if strings.Contains(optStr, "i2cp.leaseSetEncType") {
+		return optStr
+	}
+	return optStr + " i2cp.leaseSetEncType=4,0"
 }

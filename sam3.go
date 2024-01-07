@@ -209,10 +209,7 @@ func (sam *SAM) newGenericSessionWithSignature(style, id string, keys i2pkeys.I2
 // This sam3 instance is now a session
 func (sam *SAM) newGenericSessionWithSignatureAndPorts(style, id, from, to string, keys i2pkeys.I2PKeys, sigType string, options []string, extras []string) (net.Conn, error) {
 
-	optStr := ""
-	for _, opt := range options {
-		optStr += opt + " "
-	}
+	optStr := GenerateOptionString(options)
 
 	conn := sam.conn
 	fp := ""
