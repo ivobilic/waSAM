@@ -57,6 +57,9 @@ func (s *SAM) NewRawSession(id string, keys i2pkeys.I2PKeys, options []string, u
 		return nil, err
 	}
 	_, lport, err := net.SplitHostPort(udpconn.LocalAddr().String())
+	if err != nil {
+		return nil, err
+	}
 	conn, err := s.newGenericSession("RAW", id, keys, options, []string{"PORT=" + lport})
 	if err != nil {
 		return nil, err

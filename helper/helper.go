@@ -10,6 +10,9 @@ import (
 	"github.com/eyedeekay/sam3"
 )
 
+// HEY! If you're looking at this, there's a good chance that `github.com/eyedeekay/onramp`
+// is a better fit! Check it out.
+
 func NetListener(name, samaddr, keyspath string) (net.Listener, error) {
 	return I2PListener(name, sam3.SAMDefaultAddr(samaddr), keyspath)
 }
@@ -20,7 +23,9 @@ func NetListener(name, samaddr, keyspath string) (net.Listener, error) {
 func I2PListener(name, samaddr, keyspath string) (*sam3.StreamListener, error) {
 	log.Printf("Starting and registering I2P service, please wait a couple of minutes...")
 	listener, err := I2PStreamSession(name, sam3.SAMDefaultAddr(samaddr), keyspath)
-
+	if err != nil {
+		return nil, err
+	}
 	if keyspath != "" {
 		err = ioutil.WriteFile(keyspath+".i2p.public.txt", []byte(listener.Keys().Addr().Base32()), 0644)
 		if err != nil {

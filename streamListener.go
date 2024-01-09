@@ -77,39 +77,43 @@ func (l *StreamListener) AcceptI2P() (*SAMConn, error) {
 		// we connected to sam
 		// send accept() command
 		_, err = io.WriteString(s.conn, "STREAM ACCEPT ID="+l.id+" SILENT=false\n")
+		if err != nil {
+			s.Close()
+			return nil, err
+		}
 		// read reply
 		rd := bufio.NewReader(s.conn)
 		// read first line
 		line, err := rd.ReadString(10)
-		log.Println(line)
-		if err == nil {
-			if strings.HasPrefix(line, "STREAM STATUS RESULT=OK") {
-				// we gud read destination line
-				destline, err := rd.ReadString(10)
-				if err == nil {
-					dest := ExtractDest(destline)
-					l.session.from = ExtractPairString(destline, "FROM_PORT")
-					l.session.to = ExtractPairString(destline, "TO_PORT")
-					// return wrapped connection
-					dest = strings.Trim(dest, "\n")
-					return &SAMConn{
-						laddr: l.laddr,
-						raddr: i2pkeys.I2PAddr(dest),
-						conn:  s.conn,
-					}, nil
-				} else {
-					s.Close()
-					return nil, err
-				}
-			} else {
-				s.Close()
-				return nil, errors.New("invalid sam line: " + line)
-			}
-		} else {
+		if err != nil {
 			s.Close()
 			return nil, err
 		}
+		log.Println(line)
+		if strings.HasPrefix(line, "STREAM STATUS RESULT=OK") {
+			// we gud read destination line
+			destline, err := rd.ReadString(10)
+			if err == nil {
+				dest := ExtractDest(destline)
+				l.session.from = ExtractPairString(destline, "FROM_PORT")
+				l.session.to = ExtractPairString(destline, "TO_PORT")
+				// return wrapped connection
+				dest = strings.Trim(dest, "\n")
+				return &SAMConn{
+					laddr: l.laddr,
+					raddr: i2pkeys.I2PAddr(dest),
+					conn:  s.conn,
+				}, nil
+			} else {
+				s.Close()
+				return nil, err
+			}
+		} else {
+			s.Close()
+			return nil, errors.New("invalid sam line: " + line)
+		}
+	} else {
+		s.Close()
+		return nil, err
 	}
-	s.Close()
-	return nil, err
 }
