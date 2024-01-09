@@ -116,7 +116,7 @@ func (sam *SAM) EnsureKeyfile(fname string) (keys i2pkeys.I2PKeys, err error) {
 			sam.Config.I2PConfig.DestinationKeys = keys
 		}
 	} else {
-		// persistant
+		// persistent
 		_, err = os.Stat(fname)
 		if os.IsNotExist(err) {
 			// make the keys

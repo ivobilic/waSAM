@@ -103,7 +103,7 @@ func (sam *SAM) NewStreamSessionWithSignatureAndPorts(id, from, to string, keys 
 	return &StreamSession{sam.Config.I2PConfig.Sam(), id, conn, keys, time.Duration(600 * time.Second), time.Now(), sigType, from, to}, nil
 }
 
-// lookup name, convienence function
+// lookup name, convenience function
 func (s *StreamSession) Lookup(name string) (i2pkeys.I2PAddr, error) {
 	sam, err := NewSAM(s.samAddr)
 	if err == nil {
