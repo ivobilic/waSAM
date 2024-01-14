@@ -3,7 +3,6 @@ package sam3
 import (
 	"fmt"
 	"math/rand"
-	"net"
 	"strconv"
 	"strings"
 
@@ -344,34 +343,6 @@ func (cfg *Config) StreamSession() (session *StreamSession, err error) {
 		if err == nil {
 			// create session
 			session, err = s.NewStreamSession(cfg.Session, keys, cfg.Opts.AsList())
-		}
-	}
-	return
-}
-
-// create new sam datagram session from config
-func (cfg *Config) DatagramSession() (session *DatagramSession, err error) {
-	// connect
-	var s *SAM
-	s, err = NewSAM(cfg.Addr)
-	if err == nil {
-		// ensure keys exist
-		var keys i2pkeys.I2PKeys
-		keys, err = s.EnsureKeyfile(cfg.Keyfile)
-		if err == nil {
-			// determine udp port
-			var portstr string
-			_, portstr, err = net.SplitHostPort(cfg.Addr)
-			if IgnorePortError(err) == nil {
-				var port int
-				port, err = strconv.Atoi(portstr)
-				if err == nil && port > 0 {
-					// udp port is 1 lower
-					port--
-					// create session
-					session, err = s.NewDatagramSession(cfg.Session, keys, cfg.Opts.AsList(), port)
-				}
-			}
 		}
 	}
 	return

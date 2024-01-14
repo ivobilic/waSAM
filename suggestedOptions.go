@@ -2,7 +2,6 @@ package sam3
 
 import (
 	"net"
-	"net/http"
 	"os"
 	"strings"
 )
@@ -58,36 +57,6 @@ var (
 		"inbound.backupQuantity=0", "outbound.backupQuantity=0",
 		"inbound.quantity=2", "outbound.quantity=2"}
 )
-
-func PrimarySessionString() string {
-	_, err := http.Get("http://127.0.0.1:7070")
-	if err != nil {
-		_, err := http.Get("http://127.0.0.1:7657")
-		if err != nil {
-			return "MASTER"
-		}
-		// at this point we're probably running on Java I2P and thus probably
-		// have a PRIMARY session. Just to be sure, try to make one, check
-		// for errors, then immediately close it.
-		testSam, err := NewSAM(SAMDefaultAddr(""))
-		if err != nil {
-			return "MASTER"
-		}
-		newKeys, err := testSam.NewKeys()
-		if err != nil {
-			return "MASTER"
-		}
-		primarySession, err := testSam.newPrimarySession("PRIMARY", "primaryTestTunnel", newKeys, Options_Small)
-		if err != nil {
-			return "MASTER"
-		}
-		primarySession.Close()
-		return "PRIMARY"
-	}
-	return "MASTER"
-}
-
-var PrimarySessionSwitch string = PrimarySessionString()
 
 func getEnv(key, fallback string) string {
 	value, ok := os.LookupEnv(key)
