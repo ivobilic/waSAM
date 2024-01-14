@@ -206,7 +206,7 @@ func (s *StreamSession) DialI2P(addr i2pkeys.I2PAddr) (*SAMConn, error) {
 		return nil, err
 	}
 	conn := sam.conn
-	_, err = conn.Write([]byte("STREAM CONNECT ID=" + s.id + " FROM_PORT=" + s.from + " TO_PORT=" + s.to + " DESTINATION=" + addr.Base64() + " SILENT=false\n"))
+	_, err = conn.Write([]byte("STREAM CONNECT ID=" + s.id + " DESTINATION=" + addr.Base64() + " SILENT=false\n"))
 	if err != nil {
 		conn.Close()
 		return nil, err
