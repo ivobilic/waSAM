@@ -12,8 +12,7 @@ import (
 	"strings"
 
 	"github.com/eyedeekay/i2pkeys"
-
-	. "github.com/eyedeekay/i2pkeys"
+	"github.com/stealthrocket/net/wasip1"
 )
 
 // Used for controlling I2Ps SAMv3.
@@ -58,7 +57,7 @@ func RandString() string {
 func NewSAM(address string) (*SAM, error) {
 	var s SAM
 	// TODO: clean this up
-	conn, err := net.Dial("tcp", address)
+	conn, err := wasip1.Dial("tcp", address)
 	if err != nil {
 		return nil, err
 	}
@@ -180,7 +179,7 @@ func (sam *SAM) NewKeys(sigType ...string) (i2pkeys.I2PKeys, error) {
 			return i2pkeys.I2PKeys{}, errors.New("Failed to parse keys.")
 		}
 	}
-	return NewKeys(I2PAddr(pub), priv), nil
+	return i2pkeys.NewKeys(i2pkeys.I2PAddr(pub), priv), nil
 }
 
 // Performs a lookup, probably this order: 1) routers known addresses, cached
